@@ -30,35 +30,45 @@ function App() {
             {/* Design Controls */}
             <div className='max-w-4xl mx-auto mt-8 p-6'>
               {/* (Existing design controls remain the same) */}
-              <div className='bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-200 rounded-lg p-6 mb-6'>
-                <h2 className='text-xl font-bold text-purple-900 mb-4'>🎨 Hero Section Design Comparison</h2>
-                <div className='flex flex-wrap gap-3'>
+              <div className='bg-gray-50 border border-gray-100 rounded-3xl p-8 mb-8'>
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="h-10 w-10 bg-gray-900 rounded-xl flex items-center justify-center text-white shadow-lg">
+                    <i className="fi fi-rr-settings-sliders text-sm"></i>
+                  </div>
+                  <h2 className='text-lg font-black text-gray-900 uppercase tracking-widest'>Hero Section Controls</h2>
+                </div>
+                <div className='flex flex-wrap gap-3 font-sans'>
                   <button
                     onClick={() => setHeroType('modern')}
-                    className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                      heroType === 'modern' ? 'bg-purple-600 text-white' : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
+                    className={`px-6 py-3 rounded-2xl font-bold transition-all duration-300 text-sm ${
+                      heroType === 'modern' ? 'bg-gray-900 text-white shadow-xl shadow-gray-200 scale-105' : 'bg-white text-gray-500 border border-gray-100 hover:text-gray-900 hover:bg-gray-50'
                     }`}
                   >
-                    ✨ Modern Design
+                    Modern Layout
                   </button>
                   <button
                     onClick={() => setHeroType('classic')}
-                    className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                      heroType === 'classic' ? 'bg-purple-600 text-white' : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
+                    className={`px-6 py-3 rounded-2xl font-bold transition-all duration-300 text-sm ${
+                      heroType === 'classic' ? 'bg-gray-900 text-white shadow-xl shadow-gray-200 scale-105' : 'bg-white text-gray-500 border border-gray-100 hover:text-gray-900 hover:bg-gray-50'
                     }`}
                   >
-                    🎯 Classic Design
+                    Classic Layout
                   </button>
                 </div>
               </div>
 
-              <div className='bg-blue-50 border border-blue-200 rounded-lg p-6'>
-                <h3 className='text-lg font-bold text-blue-900 mb-3'>📋 Development Progress</h3>
-                <p className='text-blue-700 mb-4'>The app is now connected to the Authentication Context. Use real API credentials to test login states.</p>
-                <div className='flex flex-wrap gap-3 mb-6'>
-                  <a href="/login" className='px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors'>Go to Login Page</a>
-                  <a href="/register" className='px-4 py-2 bg-teal-600 text-white rounded-lg font-medium hover:bg-teal-700 transition-colors'>Go to Register Page</a>
-                  <a href="/dashboard" className='px-4 py-2 bg-purple-600 text-white rounded-lg font-medium hover:bg-purple-700 transition-colors'>Go to Agency Dashboard</a>
+              <div className='bg-white border border-gray-100 shadow-sm rounded-3xl p-8'>
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="h-10 w-10 bg-gray-50 rounded-xl flex items-center justify-center text-gray-900 italic font-black">
+                    i
+                  </div>
+                  <h3 className='text-lg font-black text-gray-900 uppercase tracking-widest'>Status Update</h3>
+                </div>
+                <p className='text-gray-500 mb-6 text-sm font-medium leading-relaxed'>The application is synchronized with the Authentication Context. Use real API credentials to validate state transitions and role-based access.</p>
+                <div className='flex flex-wrap gap-3 mb-2'>
+                  <a href="/login" className='px-5 py-2.5 bg-gray-900 text-white rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-black transition-all'>Login Portal</a>
+                  <a href="/register" className='px-5 py-2.5 bg-gray-50 text-gray-900 border border-gray-100 rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-gray-100 transition-all'>Registration</a>
+                  <a href="/dashboard" className='px-5 py-2.5 bg-gray-900 text-white rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-black transition-all'>Agency Dashboard</a>
                 </div>
               </div>
             </div>
@@ -110,9 +120,15 @@ function App() {
         <Route path="*" element={
           <>
             <Navbar currentPage="none" />
-            <div className="flex flex-col items-center justify-center min-h-[60vh]">
-              <h2 className="text-2xl font-bold text-gray-800">Page coming soon!</h2>
-              <a href="/" className="mt-4 text-blue-600 hover:underline">Return Home</a>
+            <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-4">
+              <div className="h-20 w-20 bg-gray-50 rounded-full flex items-center justify-center mb-6">
+                <i className="fi fi-rr-construction text-3xl text-gray-300"></i>
+              </div>
+              <h2 className="text-3xl font-black text-gray-900 tracking-tighter mb-2">PAGE UNDER CONSTRUCTION</h2>
+              <p className="text-gray-500 mb-8 max-w-sm">We're currently refining this experience. Stay tuned for updates.</p>
+              <a href="/" className="px-8 py-3 bg-gray-900 text-white rounded-2xl font-bold hover:bg-black transition-all shadow-xl shadow-gray-200">
+                Return to Safety
+              </a>
             </div>
           </>
         } />

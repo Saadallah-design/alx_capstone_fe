@@ -95,12 +95,10 @@ export default function Navbar({
     <nav className="bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between relative shadow-sm">
       {/* Logo */}
       <Link to="/" className="flex items-center gap-2">
-        <div className="h-8 w-8 bg-blue-600 rounded-lg flex items-center justify-center">
-          <svg className="h-5 w-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
-          </svg>
+        <div className="h-9 w-9 bg-gray-900 rounded-xl flex items-center justify-center shadow-lg shadow-gray-200">
+          <i className="fi fi-br-shield-check text-white text-sm"></i>
         </div>
-        <span className="font-bold text-lg text-gray-800">Phuket Rentals</span>
+        <span className="font-black text-xl text-gray-900 tracking-tight">Phuket Rentals</span>
       </Link>
 
       {/* Desktop Nav Links */}
@@ -111,9 +109,9 @@ export default function Navbar({
             to={link.href}
             className={`${
               currentPage === link.id
-                ? "text-blue-600 font-semibold"
-                : "text-gray-700 hover:text-blue-600"
-            } transition-colors`}
+                ? "text-gray-900 font-bold border-b-2 border-gray-900"
+                : "text-gray-500 hover:text-gray-900"
+            } transition-all duration-200 py-1 text-sm font-semibold`}
           >
             {link.label}
           </Link>
@@ -128,7 +126,7 @@ export default function Navbar({
             <div className="relative" ref={dropdownRef}>
               {avatarError || !user.avatar ? (
                 <div
-                  className="h-9 w-9 rounded-full bg-blue-600 text-white flex items-center justify-center text-sm font-semibold cursor-pointer border-2 border-gray-200 hover:border-blue-400 transition-colors"
+                  className="h-10 w-10 rounded-xl bg-gray-900 text-white flex items-center justify-center text-sm font-bold cursor-pointer border-2 border-gray-100 hover:border-gray-900 transition-all shadow-sm"
                   onClick={handleAvatarClick}
                   onKeyDown={handleAvatarKeyDown}
                   role="button"
@@ -185,7 +183,7 @@ export default function Navbar({
                         {user.is_pending_agency ? (
                           <Link 
                             to="/pending-approval" 
-                            className="block px-4 py-2 text-sm text-blue-600 hover:bg-blue-50 transition-colors font-medium border-t border-gray-50" 
+                            className="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-50 transition-colors font-bold border-t border-gray-100" 
                             onClick={handleDropdownItemClick}
                           >
                             Application Status
@@ -193,7 +191,7 @@ export default function Navbar({
                         ) : (
                           <Link 
                             to="/apply-agency" 
-                            className="block px-4 py-2 text-sm text-blue-600 hover:bg-blue-50 transition-colors font-medium border-t border-gray-50" 
+                            className="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-50 transition-colors font-bold border-t border-gray-100" 
                             onClick={handleDropdownItemClick}
                           >
                             Become a Partner
@@ -230,13 +228,13 @@ export default function Navbar({
             {/* Guest user - show login/register buttons */}
             <Link 
               to="/login" 
-              className="hidden md:block text-gray-700 hover:text-blue-600 font-medium transition-colors"
+              className="hidden md:block text-gray-500 hover:text-gray-900 font-bold text-sm transition-colors"
             >
               Log In
             </Link>
             <Link 
               to="/register" 
-              className="hidden md:block bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+              className="hidden md:block bg-gray-900 hover:bg-black text-white px-6 py-2.5 rounded-xl font-bold text-sm transition-all shadow-lg shadow-gray-200"
             >
               Sign Up
             </Link>
@@ -245,20 +243,12 @@ export default function Navbar({
         
         {/* Hamburger for mobile */}
         <button
-          className="md:hidden ml-2 p-1 hover:bg-gray-100 rounded transition-colors"
+          className="md:hidden ml-2 p-2 hover:bg-gray-50 rounded-xl transition-all border border-transparent hover:border-gray-100"
           onClick={() => setMenuOpen(!menuOpen)}
           aria-label={menuOpen ? "Close menu" : "Open menu"}
           aria-expanded={menuOpen}
         >
-          {menuOpen ? (
-            <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          ) : (
-            <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
-          )}
+          <i className={`fi ${menuOpen ? 'fi-rr-cross-small' : 'fi-rr-menu-burger'} text-xl flex items-center text-gray-900`}></i>
         </button>
       </div>
 

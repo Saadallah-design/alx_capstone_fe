@@ -7,9 +7,9 @@ import VehicleInfoCard from "./VehicleInfoCard";
 const MOCK_VEHICLES = [
   {
     id: "tab1",
-    icon: "🚙",
+    icon: "fi fi-rr-car",
     name: "Sedans",
-    category: "best in city",
+    category: "City Classic",
     price: "$119.00",
     title: "Daily Plans",
     description: "Starting from $25.00\n2023 new brand cars available",
@@ -17,9 +17,9 @@ const MOCK_VEHICLES = [
   },
   {
     id: "tab2",
-    icon: "🚗",
+    icon: "fi fi-rr-car-side",
     name: "SUVs",
-    category: "SUVs",
+    category: "Pro SUVs",
     price: "$90.00",
     title: "SUVs 2024",
     description: "Starting from $25.00\n2023 new brand cars available",
@@ -27,19 +27,19 @@ const MOCK_VEHICLES = [
   },
   {
     id: "tab3",
-    icon: "🚐",
+    icon: "fi fi-rr-truck-side",
     name: "Pickup",
-    category: "Pickup",
+    category: "Heavy Duty",
     price: "$100.00",
-    title: "Something Big",
+    title: "Utility Power",
     description: "Starting from $25.00\n2023 new brand cars available",
     image: "https://salaheddinelp.com/wp-content/uploads/2024/10/Untitled-design-23-1.png"
   },
   {
     id: "tab4",
-    icon: "🏍️",
+    icon: "fi fi-rr-motorcycle",
     name: "Bikes",
-    category: "bicycles",
+    category: "Eco Ride",
     price: "$9.00",
     title: "Eco Friendly",
     description: "Keep the environment clean eco-friendly bikes for your daily trips in town.",
@@ -91,7 +91,7 @@ export default function HomeSection({
   };
 
   return (
-    <section className="min-h-screen flex flex-col lg:flex-row bg-[#F0E2CB]">
+    <section className="min-h-screen flex flex-col lg:flex-row bg-gray-50 font-sans">
       {/* Left Container - Vehicle Image Showcase */}
       <div className="w-full lg:w-1/2 relative px-4 py-8 lg:py-0">
         {/* Vehicle Category Icons */}
@@ -101,14 +101,14 @@ export default function HomeSection({
               <li key={vehicle.id}>
                 <button
                   onClick={() => setActiveTab(vehicle.id)}
-                  className={`w-14 h-14 rounded-full flex items-center justify-center text-2xl transition-all duration-300 ${
+                  className={`w-14 h-14 rounded-2xl flex items-center justify-center text-xl transition-all duration-300 ${
                     activeTab === vehicle.id
-                      ? "bg-yellow-400 shadow-lg scale-110"
-                      : "bg-cyan-100 hover:bg-yellow-400 hover:shadow-md"
+                      ? "bg-gray-900 text-white shadow-xl scale-110"
+                      : "bg-white text-gray-400 hover:bg-gray-50 hover:text-gray-900 shadow-sm"
                   }`}
                   aria-label={`View ${vehicle.name}`}
                 >
-                  {vehicle.icon}
+                  <i className={vehicle.icon}></i>
                 </button>
               </li>
             ))}
@@ -147,41 +147,43 @@ export default function HomeSection({
         </div>
       </div>
 
-      {/* Right Container - Hero Content */}
-      <div className="w-full lg:w-1/2 flex flex-col justify-center gap-6 px-6 py-12 lg:px-12">
-        <div className="flex items-center gap-5">
-          <span className="text-4xl">➡️</span>
-          <h3 className="text-lg lg:text-xl font-semibold">
-            Best Cars Rental Service in Phuket
+      <div className="w-full lg:w-1/2 flex flex-col justify-center gap-6 px-6 py-12 lg:px-12 bg-white">
+        <div className="flex items-center gap-4">
+          <div className="h-10 w-10 bg-gray-900 rounded-xl flex items-center justify-center text-white shadow-lg">
+            <i className="fi fi-rr-star text-sm"></i>
+          </div>
+          <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest">
+            Premium Rental Service in Phuket
           </h3>
         </div>
 
-        <h1 className="text-4xl lg:text-5xl xl:text-6xl font-bold text-black leading-tight">
-          Drive Through Phuket in Style!
+        <h1 className="text-5xl lg:text-6xl xl:text-7xl font-black text-gray-900 leading-none tracking-tighter">
+          DRIVE PHUKET <br />
+          <span className="text-gray-300">IN STYLE.</span>
         </h1>
 
-        <p className="text-lg lg:text-xl text-gray-700 font-semibold">
-          Just fast and elegant style
+        <p className="text-lg lg:text-xl text-gray-500 font-bold tracking-tight">
+          Sophistication meets freedom on every road.
         </p>
 
-        <p className="text-gray-600 leading-relaxed max-w-xl">
-          Experience the freedom of exploring Phuket's beautiful beaches, vibrant culture, 
-          and stunning landscapes with our premium car rental service. From city sedans to 
-          rugged SUVs, we have the perfect vehicle for your adventure.
+        <p className="text-gray-400 leading-relaxed max-w-xl text-sm font-medium">
+          Experience the absolute freedom of exploring Phuket's breathtaking coastlines 
+          and hidden gems with our curated boutique fleet. We deliver excellence, 
+          from luxury sedans to rugged all-terrain performers.
         </p>
 
         <div className="flex flex-wrap gap-5 pt-4">
           <button 
             onClick={() => onVehicleSelect(activeVehicle.id)}
-            className="flex items-center gap-3 bg-[#C14438] text-white px-7 py-4 rounded-xl shadow-lg hover:scale-105 transition-transform duration-300"
+            className="flex items-center gap-3 bg-gray-900 text-white px-8 py-4 rounded-2xl shadow-xl shadow-gray-200 hover:bg-black hover:scale-[1.02] transition-all duration-300"
           >
-            <span className="font-semibold text-base lg:text-lg">Explore Now</span>
-            <span className="text-xl">➡️</span>
+            <span className="font-bold text-base uppercase tracking-tight">Explore Fleet</span>
+            <i className="fi fi-rr-arrow-right text-lg"></i>
           </button>
 
-          <button className="flex items-center gap-3 bg-white text-gray-800 px-7 py-4 rounded-xl shadow-lg hover:scale-105 transition-transform duration-300 border border-gray-200">
-            <span className="font-semibold text-base lg:text-lg">Watch Video</span>
-            <span className="text-xl">▶️</span>
+          <button className="flex items-center gap-3 bg-white text-gray-900 px-8 py-4 rounded-2xl shadow-lg hover:bg-gray-50 transition-all duration-300 border border-gray-100 font-bold uppercase tracking-tight text-sm">
+            <span>Watch Film</span>
+            <i className="fi fi-rr-play text-lg"></i>
           </button>
         </div>
       </div>

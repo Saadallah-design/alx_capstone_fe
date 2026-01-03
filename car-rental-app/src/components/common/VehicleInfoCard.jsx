@@ -10,10 +10,10 @@ export default function VehicleInfoCard({ vehicle }) {
         lineHeight: "1.4rem",
       }}
     >
-      <h3 className="font-bold text-lg mb-2.5 pr-8 relative z-10">{vehicle.title}</h3>
-      <span className="absolute top-[20%] right-[20%] text-[30px] text-gray-300 group-hover:text-red-500 group-hover:rotate-[3deg] group-hover:translate-x-[2px] group-hover:scale-[1.2] transition-all duration-200 z-10">
-        ➡️
-      </span>
+      <h3 className="font-extrabold text-xl mb-2 pr-8 relative z-10 text-gray-900 tracking-tight">{vehicle.title}</h3>
+      <div className="absolute top-[15%] right-[10%] text-[24px] text-gray-200 group-hover:text-gray-900 group-hover:rotate-[15deg] group-hover:translate-x-[5px] transition-all duration-300 z-10">
+        <i className="fi fi-rr-arrow-small-right"></i>
+      </div>
       <p className="text-sm leading-relaxed relative z-10 mt-0" style={{ width: "24ch" }}>
         {vehicle.description}
       </p>

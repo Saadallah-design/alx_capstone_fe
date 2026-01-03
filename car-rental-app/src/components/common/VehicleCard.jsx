@@ -37,11 +37,11 @@ export default function VehicleCard({
       
       {/* Card Header */}
       <div 
-        className="flex items-center gap-2 border border-yellow-400 rounded-[10px] px-2 py-2 mb-2.5 relative" 
+        className="flex items-center gap-2 border border-black/20 rounded-[10px] px-2 py-2 mb-2.5 relative" 
         style={{ backgroundColor: "rgba(255, 255, 255, 0.1)" }}
       >
-        <span className="text-xl">👑</span>
-        <h3 className="text-gray-400 font-semibold text-sm capitalize">{vehicle.category}</h3>
+        <i className="fi fi-rr-star text-black text-sm"></i>
+        <h3 className="text-gray-500 font-bold text-[10px] uppercase tracking-widest">{vehicle.category}</h3>
       </div>
 
       {/* Price */}
@@ -51,11 +51,9 @@ export default function VehicleCard({
       </div>
 
       {/* Footer Icons */}
-      <div className="absolute bottom-2.5 left-5 right-5 flex justify-between items-center text-gray-400 text-[30px]">
-        <span>📍</span>
-        <span className="transition-transform duration-500 ease-in-out hover:-rotate-[25deg] cursor-pointer icon-to-rotate">
-          ➡️
-        </span>
+      <div className="absolute bottom-2.5 left-5 right-5 flex justify-between items-center text-black/40 text-[24px]">
+        <i className="fi fi-rr-marker"></i>
+        <i className="fi fi-rr-arrow-small-right transition-transform duration-500 ease-in-out hover:-rotate-[25deg] cursor-pointer icon-to-rotate"></i>
       </div>
     </div>
   );

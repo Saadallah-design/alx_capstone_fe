@@ -40,29 +40,29 @@ export default function HeroSection() {
   };
 
   return (
-    <div className="relative bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 overflow-hidden">
+    <div className="relative bg-gray-950 overflow-hidden font-sans">
       {/* Background decorative elements */}
       <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-blue-500 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob"></div>
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-indigo-500 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-2000"></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-purple-500 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-4000"></div>
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-gray-800 rounded-full mix-blend-screen filter blur-3xl opacity-20 animate-blob"></div>
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gray-700 rounded-full mix-blend-screen filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-gray-600 rounded-full mix-blend-screen filter blur-3xl opacity-10 animate-blob animation-delay-4000"></div>
       </div>
 
       {/* Content */}
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
         <div className="text-center mb-12">
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4 leading-tight">
-            Find Your Perfect Ride in{" "}
-            <span className="text-yellow-300 inline-block transform hover:scale-105 transition-transform">
-              Phuket
-            </span>
+          <h1 className="text-5xl md:text-6xl lg:text-8xl font-black text-white mb-6 leading-none tracking-tighter">
+            DRIVE YOUR <br />
+            <span className="text-gray-400">DREAMS</span>
           </h1>
-          <p className="text-lg md:text-xl text-blue-100 max-w-2xl mx-auto mb-2">
-            Explore the island with freedom. Rent from trusted local agencies.
+          <p className="text-lg md:text-xl text-gray-400 max-w-2xl mx-auto mb-4 font-medium">
+            Explore Phuket with absolute freedom. Premium rentals from trusted local partners.
           </p>
-          <p className="text-sm md:text-base text-blue-200 max-w-xl mx-auto">
-            🌴 From scooters to SUVs • 📍 Airport & beach pickup • 💯 Best rates guaranteed
-          </p>
+          <div className="flex justify-center gap-4 text-xs font-bold text-gray-500 uppercase tracking-widest">
+            <span>• Verified Fleet</span>
+            <span>• 24/7 VIP Support</span>
+            <span>• Best Rates</span>
+          </div>
         </div>
 
         {/* Search Form Card */}
@@ -72,8 +72,8 @@ export default function HeroSection() {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
                 {/* Location */}
                 <div className="lg:col-span-2">
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    📍 Pickup Location
+                  <label className="flex items-center gap-2 text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">
+                    <i className="fi fi-rr-marker text-gray-900"></i> Pickup Location
                   </label>
                     <select
                       name="location"
@@ -94,8 +94,8 @@ export default function HeroSection() {
 
                 {/* Pickup Date */}
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    📅 Pickup Date
+                  <label className="flex items-center gap-2 text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">
+                    <i className="fi fi-rr-calendar text-gray-900"></i> Pickup Date
                   </label>
                   <input
                     type="date"
@@ -110,8 +110,8 @@ export default function HeroSection() {
 
                 {/* Pickup Time */}
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    🕐 Time
+                  <label className="flex items-center gap-2 text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">
+                    <i className="fi fi-rr-clock text-gray-900"></i> Time
                   </label>
                   <input
                     type="time"
@@ -125,8 +125,8 @@ export default function HeroSection() {
 
                 {/* Dropoff Date */}
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    📅 Return Date
+                  <label className="flex items-center gap-2 text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">
+                    <i className="fi fi-rr-calendar-check text-gray-900"></i> Return Date
                   </label>
                   <input
                     type="date"
@@ -143,11 +143,9 @@ export default function HeroSection() {
               {/* Search Button */}
               <button
                 type="submit"
-                className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold py-4 px-8 rounded-lg shadow-lg transform hover:scale-[1.02] transition-all duration-200 flex items-center justify-center gap-2"
+                className="w-full bg-gray-900 hover:bg-black text-white font-bold py-5 px-8 rounded-2xl shadow-xl shadow-gray-200 transform hover:scale-[1.01] transition-all duration-300 flex items-center justify-center gap-3 text-lg uppercase tracking-tight"
               >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
+                <i className="fi fi-rr-search text-xl"></i>
                 Search Available Cars
               </button>
             </form>
@@ -156,28 +154,28 @@ export default function HeroSection() {
             <div className="mt-6 pt-6 border-t border-gray-200">
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
                 <div className="group cursor-default">
-                  <div className="text-2xl md:text-3xl font-bold text-blue-600 group-hover:scale-110 transition-transform">
+                  <div className="text-3xl font-black text-gray-900 group-hover:scale-110 transition-transform tracking-tighter">
                     500+
                   </div>
-                  <div className="text-xs md:text-sm text-gray-600 mt-1">Available Cars</div>
+                  <div className="text-[10px] uppercase font-bold text-gray-400 tracking-widest mt-1">Available Cars</div>
                 </div>
                 <div className="group cursor-default">
-                  <div className="text-2xl md:text-3xl font-bold text-blue-600 group-hover:scale-110 transition-transform">
+                  <div className="text-3xl font-black text-gray-900 group-hover:scale-110 transition-transform tracking-tighter">
                     50+
                   </div>
-                  <div className="text-xs md:text-sm text-gray-600 mt-1">Local Agencies</div>
+                  <div className="text-[10px] uppercase font-bold text-gray-400 tracking-widest mt-1">Local Agencies</div>
                 </div>
                 <div className="group cursor-default">
-                  <div className="text-2xl md:text-3xl font-bold text-blue-600 group-hover:scale-110 transition-transform">
+                  <div className="text-3xl font-black text-gray-900 group-hover:scale-110 transition-transform tracking-tighter">
                     10K+
                   </div>
-                  <div className="text-xs md:text-sm text-gray-600 mt-1">Happy Customers</div>
+                  <div className="text-[10px] uppercase font-bold text-gray-400 tracking-widest mt-1">Happy Customers</div>
                 </div>
                 <div className="group cursor-default">
-                  <div className="text-2xl md:text-3xl font-bold text-blue-600 group-hover:scale-110 transition-transform">
+                  <div className="text-3xl font-black text-gray-900 group-hover:scale-110 transition-transform tracking-tighter">
                     4.8★
                   </div>
-                  <div className="text-xs md:text-sm text-gray-600 mt-1">Average Rating</div>
+                  <div className="text-[10px] uppercase font-bold text-gray-400 tracking-widest mt-1">Average Rating</div>
                 </div>
               </div>
             </div>
@@ -185,30 +183,22 @@ export default function HeroSection() {
         </div>
 
         {/* Trust Badges */}
-        <div className="mt-12 flex flex-wrap justify-center items-center gap-6 md:gap-8 text-white">
-          <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full">
-            <svg className="w-5 h-5 text-green-300" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-            </svg>
-            <span className="text-sm font-medium">Verified Agencies</span>
+        <div className="mt-12 flex flex-wrap justify-center items-center gap-6 md:gap-10 text-white">
+          <div className="flex items-center gap-2 px-2 py-2">
+            <i className="fi fi-rr-check-circle text-gray-400 text-lg"></i>
+            <span className="text-[10px] uppercase font-bold tracking-widest">Verified Agencies</span>
           </div>
-          <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full">
-            <svg className="w-5 h-5 text-green-300" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-            </svg>
-            <span className="text-sm font-medium">24/7 Support</span>
+          <div className="flex items-center gap-2 px-2 py-2">
+            <i className="fi fi-rr-headset text-gray-400 text-lg"></i>
+            <span className="text-[10px] uppercase font-bold tracking-widest">24/7 Support</span>
           </div>
-          <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full">
-            <svg className="w-5 h-5 text-green-300" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-            </svg>
-            <span className="text-sm font-medium">Free Cancellation</span>
+          <div className="flex items-center gap-2 px-2 py-2">
+            <i className="fi fi-rr-undo text-gray-400 text-lg"></i>
+            <span className="text-[10px] uppercase font-bold tracking-widest">Free Cancellation</span>
           </div>
-          <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full">
-            <svg className="w-5 h-5 text-green-300" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-            </svg>
-            <span className="text-sm font-medium">No Hidden Fees</span>
+          <div className="flex items-center gap-2 px-2 py-2">
+            <i className="fi fi-rr-shield-check text-gray-400 text-lg"></i>
+            <span className="text-[10px] uppercase font-bold tracking-widest">No Hidden Fees</span>
           </div>
         </div>
       </div>
