@@ -237,7 +237,7 @@ export default function SearchResults() {
                       </div>
 
                       <Link 
-                        to={`/vehicles/${vehicle.id}`}
+                        to={`/vehicles/${vehicle.slug}`}
                         className="w-full bg-gray-900 text-white py-3.5 rounded-2xl font-bold text-center block hover:bg-black transition-all shadow-lg shadow-gray-100 group-hover:shadow-gray-200 transform group-hover:-translate-y-1"
                       >
                         BOOK NOW

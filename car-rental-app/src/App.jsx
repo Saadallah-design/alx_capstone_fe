@@ -13,6 +13,7 @@ import BookingManagement from './pages/dashboard/BookingManagement'
 import ProtectedRoute from './components/auth/ProtectedRoute'
 import DashboardLayout from './components/layout/DashboardLayout'
 import SearchResults from './pages/SearchResults'
+import VehicleDetails from './pages/VehicleDetails'
 import './App.css'
 
 function App() {
@@ -101,6 +102,13 @@ function App() {
           <>
             <Navbar currentPage="search" />
             <SearchResults />
+          </>
+        } />
+
+        <Route path="/vehicles/:slug" element={
+          <>
+            <Navbar currentPage="search" />
+            <VehicleDetails />
           </>
         } />
 
