@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import apiClient from "../../api/apiClient";
 
 export default function HeroSection() {
+  const navigate = useNavigate();
   const [branches, setBranches] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchData, setSearchData] = useState({
@@ -36,7 +38,7 @@ export default function HeroSection() {
     console.log("Search data:", searchData);
     // Construct query parameters and navigate to search page
     const queryParams = new URLSearchParams(searchData).toString();
-    window.location.href = `/search?${queryParams}`;
+    navigate(`/search?${queryParams}`);
   };
 
   return (
@@ -85,7 +87,7 @@ export default function HeroSection() {
                     >
                       <option value="">{loading ? "Loading locations..." : "Select location..."}</option>
                       {branches.map(branch => (
-                        <option key={branch.id} value={branch.slug || branch.id}>
+                        <option key={branch.id} value={branch.name}>
                           {branch.name}
                         </option>
                       ))}

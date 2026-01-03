@@ -12,6 +12,7 @@ import FleetManagement from './pages/dashboard/FleetManagement'
 import BookingManagement from './pages/dashboard/BookingManagement'
 import ProtectedRoute from './components/auth/ProtectedRoute'
 import DashboardLayout from './components/layout/DashboardLayout'
+import SearchResults from './pages/SearchResults'
 import './App.css'
 
 function App() {
@@ -93,6 +94,13 @@ function App() {
           <>
             <Navbar currentPage="pending" />
             <PendingApproval />
+          </>
+        } />
+
+        <Route path="/search" element={
+          <>
+            <Navbar currentPage="search" />
+            <SearchResults />
           </>
         } />
 
