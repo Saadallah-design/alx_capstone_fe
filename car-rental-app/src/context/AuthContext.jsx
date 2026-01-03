@@ -84,6 +84,15 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const refreshUser = async () => {
+    try {
+      const response = await apiClient.get('/api/auth/me/');
+      setUser(response.data);
+    } catch (error) {
+      console.error("Failed to refresh user profile:", error);
+    }
+  };
+
   const logout = () => {
     Cookies.remove('access_token');
     Cookies.remove('refresh_token');
@@ -91,7 +100,15 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, register, logout, isAuthenticated: !!user }}>
+    <AuthContext.Provider value={{ 
+      user, 
+      loading, 
+      login, 
+      register, 
+      logout, 
+      refreshUser,
+      isAuthenticated: !!user 
+    }}>
       {children}
     </AuthContext.Provider>
   );

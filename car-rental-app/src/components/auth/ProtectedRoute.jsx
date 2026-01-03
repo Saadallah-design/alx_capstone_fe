@@ -19,8 +19,23 @@ export default function ProtectedRoute({ children, requiredRole }) {
   }
 
   if (requiredRole && user?.role !== requiredRole) {
-    // Redirect to home if user doesn't have the required role
+    // Check if they are actually an agency applicant who is just not yet approved
+    // (Assuming the backend might return role='CUSTOMER' but is_approved=false for applicants)
+    if (requiredRole === 'AGENCY_ADMIN' && user?.is_pending_agency) {
+      return <Navigate to="/pending-approval" replace />;
+    }
+
+    console.log("Access Denied:", {
+      userRole: user?.role,
+      required: requiredRole,
+      fullUser: user
+    });
     return <Navigate to="/" replace />;
+  }
+
+  // New: Even if role matches, check if approval is required and granted
+  if (requiredRole === 'AGENCY_ADMIN' && user?.role === 'AGENCY_ADMIN' && user?.is_approved === false) {
+    return <Navigate to="/pending-approval" replace />;
   }
 
   return children;
