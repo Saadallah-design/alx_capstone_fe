@@ -43,7 +43,7 @@ export default function Navbar({
     if (isAgency) {
       return [
         { id: "dashboard", label: "Dashboard", href: "/dashboard" },
-        { id: "my-cars", label: "My Cars", href: "/dashboard/cars" },
+        { id: "my-cars", label: "My Fleet", href: "/dashboard/fleet" },
         { id: "bookings", label: "Bookings", href: "/dashboard/bookings" },
         { id: "analytics", label: "Analytics", href: "/dashboard/analytics" },
       ];
@@ -266,7 +266,7 @@ export default function Navbar({
               className="block w-full text-left px-4 py-3 text-red-600 font-medium hover:bg-gray-50 transition-colors"
               onClick={() => {
                 handleNavClick();
-                onLogout();
+                logout();
               }}
             >
               Log Out
