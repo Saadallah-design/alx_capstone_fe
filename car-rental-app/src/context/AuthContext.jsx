@@ -26,20 +26,32 @@ export const AuthProvider = ({ children }) => {
     initializeAuth();
   }, []);
 
-  const login = async (credentials) => {
+  const login = async (credentials, rememberMe = false) => {
     try {
       const response = await apiClient.post('/api/auth/login/', credentials);
       const { access, refresh, user: userData } = response.data;
       
-      Cookies.set('access_token', access);
-      Cookies.set('refresh_token', refresh);
+      // Security: Set cookie expiration based on Remember Me
+      // If not remembered, cookies are session-based (expires on browser close)
+      const options = rememberMe ? { expires: 30 } : {};
+      
+      Cookies.set('access_token', access, options);
+      Cookies.set('refresh_token', refresh, options);
       setUser(userData);
       
       return { success: true };
     } catch (error) {
+      // Security: Use a generic error message to avoid email enumeration
+      let errorMessage = 'Invalid email or password. Please try again.';
+      
+      // If the backend specifically says the account is locked, we can show that
+      if (error.response?.data?.detail === 'Account is locked') {
+        errorMessage = 'This account has been locked due to too many failed attempts.';
+      }
+
       return { 
         success: false, 
-        error: error.response?.data?.detail || 'Login failed' 
+        error: errorMessage 
       };
     }
   };

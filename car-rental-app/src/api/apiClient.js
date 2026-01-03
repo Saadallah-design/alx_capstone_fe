@@ -8,13 +8,21 @@ const apiClient = axios.create({
     },
 });
 
-// Request interceptor to add the access token to every request
+// Request interceptor to add tokens and CSRF protection
 apiClient.interceptors.request.use(
     (config) => {
+        // 1. Add JWT access token
         const token = Cookies.get('access_token');
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
         }
+
+        // 2. Add CSRF token for Django
+        const csrfToken = Cookies.get('csrftoken');
+        if (csrfToken && ['post', 'put', 'patch', 'delete'].includes(config.method?.toLowerCase())) {
+            config.headers['X-CSRFToken'] = csrfToken;
+        }
+
         return config;
     },
     (error) => Promise.reject(error)
