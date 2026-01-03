@@ -5,7 +5,7 @@ import { useAuth } from "../../context/AuthContext";
 export default function Navbar({ 
   currentPage = "home"
 }) {
-  const { user, logout } = useAuth();
+  const { user, logout, isAuthenticated } = useAuth();
   const isAgency = user?.role === 'AGENCY_ADMIN';
   
   const [menuOpen, setMenuOpen] = useState(false);
@@ -48,12 +48,22 @@ export default function Navbar({
         { id: "analytics", label: "Analytics", href: "/dashboard/analytics" },
       ];
     } else {
-      return [
+      const links = [
         { id: "home", label: "Home", href: "/" },
         { id: "search", label: "Browse Cars", href: "/search" },
-        { id: "how-it-works", label: "How It Works", href: "/how-it-works" },
-        { id: "about", label: "About", href: "/about" },
       ];
+      
+      // Add My Bookings for authenticated customers
+      if (isAuthenticated && !isAgency) {
+        links.push({ id: "my-bookings", label: "My Bookings", href: "/my-bookings" });
+      }
+      
+      links.push(
+        { id: "how-it-works", label: "How It Works", href: "/how-it-works" },
+        { id: "about", label: "About", href: "/about" }
+      );
+      
+      return links;
     }
   };
 

@@ -14,6 +14,7 @@ import ProtectedRoute from './components/auth/ProtectedRoute'
 import DashboardLayout from './components/layout/DashboardLayout'
 import SearchResults from './pages/SearchResults'
 import VehicleDetails from './pages/VehicleDetails'
+import MyBookings from './pages/MyBookings'
 import './App.css'
 
 function App() {
@@ -111,6 +112,8 @@ function App() {
             <VehicleDetails />
           </>
         } />
+
+        <Route path="/my-bookings" element={<MyBookings />} />
 
         <Route path="/apply-agency" element={
           <>
