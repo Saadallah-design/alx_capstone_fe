@@ -2,13 +2,13 @@ import { useState, useEffect } from 'react';
 import apiClient from '../api/apiClient';
 
 const StatCard = ({ title, value, icon, color }) => (
-  <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center justify-between group hover:shadow-md transition-all">
+  <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 flex items-center justify-between group hover:shadow-lg hover:border-gray-200 transition-all duration-300">
     <div>
-      <p className="text-sm font-medium text-gray-500 mb-1">{title}</p>
-      <h3 className="text-2xl font-bold text-gray-900">{value}</h3>
+      <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">{title}</p>
+      <h3 className="text-3xl font-black text-gray-900 leading-none">{value}</h3>
     </div>
-    <div className={`h-12 w-12 rounded-xl flex items-center justify-center text-xl bg-${color}-50 text-${color}-600 group-hover:scale-110 transition-transform`}>
-      {icon}
+    <div className="h-14 w-14 rounded-2xl flex items-center justify-center text-2xl bg-gray-50 text-gray-900 shadow-inner group-hover:bg-gray-900 group-hover:text-white transition-all duration-300">
+      <i className={`${icon} flex items-center justify-center`}></i>
     </div>
   </div>
 );
@@ -61,10 +61,10 @@ export default function AgencyDashboard() {
     <div className="space-y-8">
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <StatCard title="Total Fleet" value={stats.totalCars} icon="🚗" color="blue" />
-        <StatCard title="Active Bookings" value={stats.activeBookings} icon="📅" color="emerald" />
-        <StatCard title="Monthly Revenue" value={`${stats.monthlyEarnings.toLocaleString()} ฿`} icon="💰" color="purple" />
-        <StatCard title="Pending Requests" value={stats.pendingApprovals} icon="⚠️" color="orange" />
+        <StatCard title="Total Fleet" value={stats.totalCars} icon="fi fi-rr-car" />
+        <StatCard title="Active Bookings" value={stats.activeBookings} icon="fi fi-rr-calendar-check" />
+        <StatCard title="Monthly Revenue" value={`${stats.monthlyEarnings.toLocaleString()} ฿`} icon="fi fi-rr-money-bill-wave" />
+        <StatCard title="Pending Requests" value={stats.pendingApprovals} icon="fi fi-rr-clock" />
       </div>
 
       {/* Recent Activity / Insights Section */}
@@ -77,9 +77,14 @@ export default function AgencyDashboard() {
         </div>
         <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
           <h3 className="text-lg font-bold text-gray-900 mb-4">Performance Insights</h3>
-          <div className="p-4 bg-blue-50 rounded-xl border border-blue-100">
-            <p className="text-sm text-blue-700 font-medium">💡 Pro Tip:</p>
-            <p className="text-sm text-blue-600 mt-1">Your Toyota Fortuner is your most popular car this month. Consider adding more SUVs to your fleet!</p>
+          <div className="p-5 bg-gray-50 rounded-2xl border border-gray-100 flex gap-4 items-start">
+            <div className="h-10 w-10 min-w-[2.5rem] bg-gray-900 rounded-xl flex items-center justify-center text-white shadow-md">
+              <i className="fi fi-rr-lightbulb text-lg"></i>
+            </div>
+            <div>
+              <p className="text-xs font-bold text-gray-900 uppercase tracking-widest mb-1">Performance Insight</p>
+              <p className="text-sm text-gray-500 leading-relaxed">Your Toyota Fortuner is your most popular car this month. Consider adding more SUVs to your fleet!</p>
+            </div>
           </div>
         </div>
       </div>

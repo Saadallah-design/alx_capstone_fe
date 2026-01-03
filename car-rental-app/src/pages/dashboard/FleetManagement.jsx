@@ -92,11 +92,9 @@ export default function FleetManagement() {
         </div>
         <button 
           onClick={() => setIsModalOpen(true)}
-          className="px-5 py-2.5 bg-blue-600 text-white rounded-xl font-semibold shadow-lg shadow-blue-200 hover:bg-blue-700 hover:scale-[1.02] transition-all flex items-center"
+          className="px-6 py-3 bg-gray-900 text-white rounded-2xl font-bold shadow-lg shadow-gray-200 hover:bg-black hover:scale-[1.02] transition-all flex items-center text-sm"
         >
-          <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-          </svg>
+          <i className="fi fi-rr-plus mr-2 flex items-center"></i>
           Add New Vehicle
         </button>
       </div>
@@ -108,11 +106,9 @@ export default function FleetManagement() {
               <h3 className="text-xl font-bold text-gray-900">Add New Vehicle</h3>
               <button 
                 onClick={() => setIsModalOpen(false)}
-                className="text-gray-400 hover:text-gray-600 transition-colors p-1 rounded-full hover:bg-gray-100"
+                className="text-gray-400 hover:text-gray-900 transition-colors p-2 rounded-full hover:bg-gray-100 flex items-center justify-center"
               >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
+                <i className="fi fi-rr-cross-small text-xl"></i>
               </button>
             </div>
 
@@ -229,14 +225,19 @@ export default function FleetManagement() {
       )}
 
       {!loading && vehicles.length === 0 ? (
-        <div className="bg-white p-12 rounded-2xl shadow-sm border border-gray-100 text-center">
-          <div className="text-6xl mb-4 text-gray-200">🚗</div>
-          <h3 className="text-xl font-bold text-gray-900 mb-2">No vehicles found</h3>
-          <p className="text-gray-500 max-w-md mx-auto mb-6">
-            You haven't listed any cars yet. Start earning by adding your first vehicle to the fleet.
+        <div className="bg-white p-16 rounded-3xl shadow-sm border border-gray-100 text-center">
+          <div className="w-24 h-24 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-6">
+            <i className="fi fi-rr-car-side text-4xl text-gray-300"></i>
+          </div>
+          <h3 className="text-2xl font-black text-gray-900 mb-2 tracking-tight">Your fleet is empty</h3>
+          <p className="text-gray-500 max-w-sm mx-auto mb-8 text-sm">
+            Launch your agency by adding your first vehicle to the platform.
           </p>
-          <button className="px-6 py-2 border-2 border-blue-600 text-blue-600 rounded-lg font-medium hover:bg-blue-50 transition-colors">
-            Learn how it works
+          <button 
+            onClick={() => setIsModalOpen(true)}
+            className="px-8 py-3 bg-gray-900 text-white rounded-2xl font-bold hover:bg-black transition-all shadow-lg shadow-gray-200"
+          >
+            Add First Vehicle
           </button>
         </div>
       ) : (
@@ -276,10 +277,8 @@ export default function FleetManagement() {
                   <button className="flex-1 py-2 text-sm font-semibold text-gray-700 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
                     Edit
                   </button>
-                  <button className="p-2 text-red-500 bg-red-50 rounded-lg hover:bg-red-100 transition-colors">
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                    </svg>
+                  <button className="p-2.5 text-gray-400 hover:text-red-500 bg-gray-50 hover:bg-red-50 rounded-xl transition-all duration-200">
+                    <i className="fi fi-rr-trash text-lg flex items-center"></i>
                   </button>
                 </div>
               </div>
