@@ -56,6 +56,34 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const register = async (userData) => {
+    try {
+      await apiClient.post('/api/auth/register/', userData);
+      // After successful registration, usually we redirect to login or auto-login
+      return { success: true };
+    } catch (error) {
+      // Extract detailed validation errors if available
+      let errorMessage = 'Registration failed. Please check your details.';
+      
+      if (error.response?.data) {
+        const data = error.response.data;
+        if (typeof data === 'object') {
+          // If it's an object (e.g., { email: ['...'], password: ['...'] }), format it
+          errorMessage = Object.entries(data)
+            .map(([field, messages]) => `${field}: ${Array.isArray(messages) ? messages.join(' ') : messages}`)
+            .join(' | ');
+        } else if (typeof data === 'string') {
+          errorMessage = data;
+        }
+      }
+
+      return { 
+        success: false, 
+        error: errorMessage 
+      };
+    }
+  };
+
   const logout = () => {
     Cookies.remove('access_token');
     Cookies.remove('refresh_token');
@@ -63,7 +91,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout, isAuthenticated: !!user }}>
+    <AuthContext.Provider value={{ user, loading, login, register, logout, isAuthenticated: !!user }}>
       {children}
     </AuthContext.Provider>
   );

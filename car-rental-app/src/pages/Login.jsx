@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 
 export default function Login() {
   const [credentials, setCredentials] = useState({ email: '', password: '' });
@@ -14,6 +14,8 @@ export default function Login() {
 
   const { login } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const successMessage = location.state?.message;
 
   // Security: Check if user is currently locked out
   const isLockedOut = lockoutUntil && new Date() < new Date(lockoutUntil);
@@ -39,6 +41,7 @@ export default function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log("Login form submitted with:", credentials);
     if (isLockedOut) return;
 
     setError('');
@@ -87,14 +90,19 @@ export default function Login() {
         </h2>
         <p className="mt-2 text-center text-sm text-gray-600">
           Or{' '}
-          <a href="/register" className="font-medium text-blue-600 hover:text-blue-500 transition-colors">
+          <Link to="/register" className="font-medium text-blue-600 hover:text-blue-500 transition-colors">
             create a new account
-          </a>
+          </Link>
         </p>
       </div>
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="bg-white py-8 px-4 shadow-xl rounded-2xl sm:px-10 border border-gray-100">
+          {successMessage && !error && (
+            <div className="mb-4 p-3 bg-green-50 border-l-4 border-green-500 text-green-700 text-sm rounded">
+              {successMessage}
+            </div>
+          )}
           {error && (
             <div className="mb-4 p-3 bg-red-50 border-l-4 border-red-500 text-red-700 text-sm rounded">
               {error}
