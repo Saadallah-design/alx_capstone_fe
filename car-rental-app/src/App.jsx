@@ -4,6 +4,12 @@ import Navbar from './components/common/Navbar'
 import HeroSection from './components/common/HeroSection'
 import HomeSection from './components/common/HomeSection'
 import Login from './pages/Login'
+import Register from './pages/Register'
+import AgencyDashboard from './pages/AgencyDashboard'
+import FleetManagement from './pages/dashboard/FleetManagement'
+import BookingManagement from './pages/dashboard/BookingManagement'
+import ProtectedRoute from './components/auth/ProtectedRoute'
+import DashboardLayout from './components/layout/DashboardLayout'
 import './App.css'
 
 function App() {
@@ -11,16 +17,17 @@ function App() {
 
   return (
     <Router>
-      <Navbar currentPage="home" />
-
       <Routes>
+        {/* Public Routes with Main Navbar */}
         <Route path="/" element={
           <>
+            <Navbar currentPage="home" />
             {/* Toggle between Hero Sections */}
             {heroType === 'modern' ? <HeroSection /> : <HomeSection />}
 
             {/* Design Controls */}
             <div className='max-w-4xl mx-auto mt-8 p-6'>
+              {/* (Existing design controls remain the same) */}
               <div className='bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-200 rounded-lg p-6 mb-6'>
                 <h2 className='text-xl font-bold text-purple-900 mb-4'>🎨 Hero Section Design Comparison</h2>
                 <div className='flex flex-wrap gap-3'>
@@ -48,30 +55,50 @@ function App() {
                 <p className='text-blue-700 mb-4'>The app is now connected to the Authentication Context. Use real API credentials to test login states.</p>
                 <div className='flex flex-wrap gap-3 mb-6'>
                   <a href="/login" className='px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors'>Go to Login Page</a>
-                </div>
-                <div className='space-y-4'>
-                  <div>
-                    <h4 className='font-semibold text-blue-800 mb-2'>Current Setup:</h4>
-                    <ul className='list-disc list-inside text-sm text-blue-700 ml-2'>
-                      <li>JWT Token Management (axios + js-cookie)</li>
-                      <li>Request/Response Interceptors for Auth</li>
-                      <li>Role-based Navbar visibility</li>
-                    </ul>
-                  </div>
+                  <a href="/register" className='px-4 py-2 bg-teal-600 text-white rounded-lg font-medium hover:bg-teal-700 transition-colors'>Go to Register Page</a>
+                  <a href="/dashboard" className='px-4 py-2 bg-purple-600 text-white rounded-lg font-medium hover:bg-purple-700 transition-colors'>Go to Agency Dashboard</a>
                 </div>
               </div>
             </div>
           </>
         } />
         
-        <Route path="/login" element={<Login />} />
+        <Route path="/login" element={
+          <>
+            <Navbar currentPage="login" />
+            <Login />
+          </>
+        } />
+
+        <Route path="/register" element={
+          <>
+            <Navbar currentPage="register" />
+            <Register />
+          </>
+        } />
+
+        {/* Protected Agency Dashboard Routes */}
+        <Route path="/dashboard" element={
+          <ProtectedRoute requiredRole="AGENCY_ADMIN">
+            <DashboardLayout />
+          </ProtectedRoute>
+        }>
+          <Route index element={<AgencyDashboard />} />
+          <Route path="fleet" element={<FleetManagement />} />
+          <Route path="bookings" element={<BookingManagement />} />
+          <Route path="analytics" element={<div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 italic text-gray-400">Analytics reports coming soon...</div>} />
+          <Route path="profile" element={<div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 italic text-gray-400">Agency profile settings coming soon...</div>} />
+        </Route>
         
         {/* Fallback for other routes */}
         <Route path="*" element={
-          <div className="flex flex-col items-center justify-center min-h-[60vh]">
-            <h2 className="text-2xl font-bold text-gray-800">Page coming soon!</h2>
-            <a href="/" className="mt-4 text-blue-600 hover:underline">Return Home</a>
-          </div>
+          <>
+            <Navbar currentPage="none" />
+            <div className="flex flex-col items-center justify-center min-h-[60vh]">
+              <h2 className="text-2xl font-bold text-gray-800">Page coming soon!</h2>
+              <a href="/" className="mt-4 text-blue-600 hover:underline">Return Home</a>
+            </div>
+          </>
         } />
       </Routes>
     </Router>
