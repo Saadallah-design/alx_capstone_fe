@@ -6,11 +6,14 @@ export default function HeroSection() {
   const navigate = useNavigate();
   const [branches, setBranches] = useState([]);
   const [loading, setLoading] = useState(true);
+  const today = new Date().toISOString().split('T')[0];
+  const twoDaysLater = new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+
   const [searchData, setSearchData] = useState({
     location: "",
-    pickupDate: "",
+    pickupDate: today,
     pickupTime: "10:00",
-    dropoffDate: "",
+    dropoffDate: twoDaysLater,
     dropoffTime: "10:00",
   });
 
