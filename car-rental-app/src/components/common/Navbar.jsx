@@ -174,13 +174,32 @@ export default function Navbar({
                       My Profile
                     </Link>
                     {!isAgency && (
-                      <Link 
-                        to="/my-bookings" 
-                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors" 
-                        onClick={handleDropdownItemClick}
-                      >
-                        My Bookings
-                      </Link>
+                      <>
+                        <Link 
+                          to="/my-bookings" 
+                          className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors" 
+                          onClick={handleDropdownItemClick}
+                        >
+                          My Bookings
+                        </Link>
+                        {user.is_pending_agency ? (
+                          <Link 
+                            to="/pending-approval" 
+                            className="block px-4 py-2 text-sm text-blue-600 hover:bg-blue-50 transition-colors font-medium border-t border-gray-50" 
+                            onClick={handleDropdownItemClick}
+                          >
+                            Application Status
+                          </Link>
+                        ) : (
+                          <Link 
+                            to="/apply-agency" 
+                            className="block px-4 py-2 text-sm text-blue-600 hover:bg-blue-50 transition-colors font-medium border-t border-gray-50" 
+                            onClick={handleDropdownItemClick}
+                          >
+                            Become a Partner
+                          </Link>
+                        )}
+                      </>
                     )}
                     <Link 
                       to="/settings" 

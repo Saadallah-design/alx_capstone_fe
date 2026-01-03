@@ -53,7 +53,16 @@ export default function Register() {
     const result = await register(formData);
     
     if (result.success) {
-      navigate('/login', { state: { message: 'Registration successful! Please log in.' } });
+      if (formData.role === 'AGENCY_ADMIN') {
+        navigate('/login', { 
+          state: { 
+            message: 'Thank you for your application! Our team will review your agency credentials within 24-48 hours. You can sign in to check your status.',
+            type: 'success'
+          } 
+        });
+      } else {
+        navigate('/login', { state: { message: 'Registration successful! Please log in.' } });
+      }
     } else {
       setError(result.error);
     }

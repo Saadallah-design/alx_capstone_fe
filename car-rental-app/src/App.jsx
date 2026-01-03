@@ -5,6 +5,8 @@ import HeroSection from './components/common/HeroSection'
 import HomeSection from './components/common/HomeSection'
 import Login from './pages/Login'
 import Register from './pages/Register'
+import AgencyApplication from './pages/AgencyApplication'
+import PendingApproval from './pages/PendingApproval'
 import AgencyDashboard from './pages/AgencyDashboard'
 import FleetManagement from './pages/dashboard/FleetManagement'
 import BookingManagement from './pages/dashboard/BookingManagement'
@@ -74,6 +76,20 @@ function App() {
           <>
             <Navbar currentPage="register" />
             <Register />
+          </>
+        } />
+
+        <Route path="/pending-approval" element={
+          <>
+            <Navbar currentPage="pending" />
+            <PendingApproval />
+          </>
+        } />
+
+        <Route path="/apply-agency" element={
+          <>
+            <Navbar currentPage="apply" />
+            <AgencyApplication />
           </>
         } />
 
