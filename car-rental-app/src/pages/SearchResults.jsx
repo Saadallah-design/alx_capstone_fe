@@ -103,7 +103,7 @@ export default function SearchResults() {
                 >
                   <option value="all">Everywhere in Phuket</option>
                   {branches.map(branch => (
-                    <option key={branch.id} value={branch.slug || branch.id}>{branch.name}</option>
+                    <option key={branch.id} value={branch.name}>{branch.name}</option>
                   ))}
                 </select>
               </div>
