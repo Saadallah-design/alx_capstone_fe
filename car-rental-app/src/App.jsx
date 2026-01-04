@@ -19,6 +19,7 @@ import VehicleDetails from './pages/VehicleDetails'
 import MyBookings from './pages/MyBookings'
 import ProfilePage from './pages/ProfilePage'
 import AboutPage from './pages/AboutPage'
+import HowItWorksPage from './pages/HowItWorksPage'
 import './App.css'
 
 
@@ -63,6 +64,7 @@ function App() {
         } />
 
         <Route path="/about" element={<AboutPage />} />
+        <Route path="/how-it-works" element={<HowItWorksPage />} />
 
         <Route path="/vehicles/:slug" element={
           <>
