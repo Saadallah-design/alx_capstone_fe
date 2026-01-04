@@ -17,6 +17,7 @@ import BranchManagement from './pages/dashboard/BranchManagement'
 import SearchResults from './pages/SearchResults'
 import VehicleDetails from './pages/VehicleDetails'
 import MyBookings from './pages/MyBookings'
+import ProfilePage from './pages/ProfilePage'
 import './App.css'
 
 
@@ -68,6 +69,7 @@ function App() {
         } />
 
         <Route path="/my-bookings" element={<MyBookings />} />
+        <Route path="/profile" element={<ProfilePage />} />
         <Route path="/payment" element={<PaymentPage />} />
         <Route path="/booking-success" element={<BookingSuccess />} />
         {/* Backend Redirect Compatibility Route */}
