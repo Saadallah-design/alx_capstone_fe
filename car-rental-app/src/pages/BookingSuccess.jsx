@@ -23,12 +23,8 @@ export default function BookingSuccess() {
             >
                 View My Bookings
             </Link>
-            <Link 
-                to="/search" 
-                className="px-8 py-4 bg-white text-gray-900 border border-gray-100 rounded-2xl font-bold text-sm uppercase tracking-widest hover:bg-gray-50 transition-all"
-            >
-                Book Another
-            </Link>
+            {/* If we had the booking ID here, we could add a direct Pay Now button */}
+            {/* For now, users can pay from the My Bookings page */}
         </div>
       </div>
     </>
