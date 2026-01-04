@@ -8,10 +8,11 @@ import Register from './pages/Register'
 import AgencyApplication from './pages/AgencyApplication'
 import PendingApproval from './pages/PendingApproval'
 import AgencyDashboard from './pages/AgencyDashboard'
-import FleetManagement from './pages/dashboard/FleetManagement'
-import BookingManagement from './pages/dashboard/BookingManagement'
 import ProtectedRoute from './components/auth/ProtectedRoute'
 import DashboardLayout from './components/layout/DashboardLayout'
+import FleetManagement from './pages/dashboard/FleetManagement'
+import BookingManagement from './pages/dashboard/BookingManagement'
+import BranchManagement from './pages/dashboard/BranchManagement'
 import SearchResults from './pages/SearchResults'
 import VehicleDetails from './pages/VehicleDetails'
 import MyBookings from './pages/MyBookings'
@@ -131,6 +132,7 @@ function App() {
           <Route index element={<AgencyDashboard />} />
           <Route path="fleet" element={<FleetManagement />} />
           <Route path="bookings" element={<BookingManagement />} />
+          <Route path="branches" element={<BranchManagement />} />
           <Route path="analytics" element={<div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 italic text-gray-400">Analytics reports coming soon...</div>} />
           <Route path="profile" element={<div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 italic text-gray-400">Agency profile settings coming soon...</div>} />
         </Route>

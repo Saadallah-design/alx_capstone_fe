@@ -6,6 +6,7 @@ const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+  const [agency, setAgency] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -15,6 +16,10 @@ export const AuthProvider = ({ children }) => {
         try {
           const response = await apiClient.get('/api/auth/me/');
           setUser(response.data);
+          // Restore agency from user object if available
+          if (response.data.agency) {
+            setAgency(response.data.agency);
+          }
         } catch (error) {
           console.error("Failed to fetch user profile:", error);
           // Token might be invalid or expired, apiClient interceptor handles refresh/logout
@@ -29,7 +34,7 @@ export const AuthProvider = ({ children }) => {
   const login = async (credentials, rememberMe = false) => {
     try {
       const response = await apiClient.post('/api/auth/login/', credentials);
-      const { access, refresh, user: userData } = response.data;
+      const { access, refresh, user: userData, agency: agencyData } = response.data;
       
       // Security: Set cookie expiration based on Remember Me
       // If not remembered, cookies are session-based (expires on browser close)
@@ -38,6 +43,7 @@ export const AuthProvider = ({ children }) => {
       Cookies.set('access_token', access, options);
       Cookies.set('refresh_token', refresh, options);
       setUser(userData);
+      setAgency(agencyData);
       
       return { success: true };
     } catch (error) {
@@ -88,6 +94,9 @@ export const AuthProvider = ({ children }) => {
     try {
       const response = await apiClient.get('/api/auth/me/');
       setUser(response.data);
+      if (response.data.agency) {
+        setAgency(response.data.agency);
+      }
     } catch (error) {
       console.error("Failed to refresh user profile:", error);
     }
@@ -97,11 +106,13 @@ export const AuthProvider = ({ children }) => {
     Cookies.remove('access_token');
     Cookies.remove('refresh_token');
     setUser(null);
+    setAgency(null);
   };
 
   return (
     <AuthContext.Provider value={{ 
       user, 
+      agency,
       loading, 
       login, 
       register, 

@@ -1,19 +1,37 @@
 import { useState } from 'react';
 import { Link, useLocation, Outlet } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import AgencySetup from '../../pages/dashboard/AgencySetup';
 
-const menuItems = [
-  { id: 'overview', label: 'Overview', icon: 'fi fi-rr-apps', path: '/dashboard' },
-  { id: 'fleet', label: 'My Fleet', icon: 'fi fi-rr-car', path: '/dashboard/fleet' },
-  { id: 'bookings', label: 'Bookings', icon: 'fi fi-rr-calendar', path: '/dashboard/bookings' },
-  { id: 'analytics', label: 'Analytics', icon: 'fi fi-rr-stats', path: '/dashboard/analytics' },
-  { id: 'profile', label: 'Agency Profile', icon: 'fi fi-rr-building', path: '/dashboard/profile' },
-];
+const getMenuItems = (role) => {
+  const items = [
+    { id: 'overview', label: 'Overview', icon: 'fi fi-rr-apps', path: '/dashboard' },
+    { id: 'fleet', label: 'My Fleet', icon: 'fi fi-rr-car', path: '/dashboard/fleet' },
+    { id: 'bookings', label: 'Bookings', icon: 'fi fi-rr-calendar', path: '/dashboard/bookings' },
+  ];
+
+  if (role === 'AGENCY_ADMIN') {
+    items.push(
+      { id: 'branches', label: 'Pickup Locations', icon: 'fi fi-rr-marker', path: '/dashboard/branches' },
+      { id: 'analytics', label: 'Analytics', icon: 'fi fi-rr-stats', path: '/dashboard/analytics' },
+      { id: 'profile', label: 'Agency Profile', icon: 'fi fi-rr-building', path: '/dashboard/profile' }
+    );
+  } else if (role === 'AGENCY_STAFF') {
+    // Staff might have limited analytics or profile access if needed
+    items.push(
+      { id: 'profile', label: 'My Profile', icon: 'fi fi-rr-user', path: '/dashboard/profile' }
+    );
+  }
+
+  return items;
+};
 
 export default function DashboardLayout({ children }) {
-  const { user, logout } = useAuth();
+  const { user, agency, logout } = useAuth();
   const location = useLocation();
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+
+  const menuItems = getMenuItems(user?.role);
 
   return (
     <div className="flex h-screen bg-gray-50 font-sans">
@@ -95,7 +113,11 @@ export default function DashboardLayout({ children }) {
         {/* Dynamic Page Content */}
         <section className="flex-1 overflow-y-auto p-8">
           <div className="max-w-7xl mx-auto">
-            <Outlet />
+            {user?.role === 'AGENCY_ADMIN' && !agency ? (
+              <AgencySetup />
+            ) : (
+              <Outlet />
+            )}
           </div>
         </section>
       </main>
