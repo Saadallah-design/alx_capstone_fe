@@ -18,6 +18,7 @@ import SearchResults from './pages/SearchResults'
 import VehicleDetails from './pages/VehicleDetails'
 import MyBookings from './pages/MyBookings'
 import ProfilePage from './pages/ProfilePage'
+import AboutPage from './pages/AboutPage'
 import './App.css'
 
 
@@ -60,6 +61,8 @@ function App() {
             <SearchResults />
           </>
         } />
+
+        <Route path="/about" element={<AboutPage />} />
 
         <Route path="/vehicles/:slug" element={
           <>
