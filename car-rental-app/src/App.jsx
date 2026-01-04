@@ -11,6 +11,7 @@ import ProtectedRoute from './components/auth/ProtectedRoute'
 import DashboardLayout from './components/layout/DashboardLayout'
 import FleetManagement from './pages/dashboard/FleetManagement'
 import BookingManagement from './pages/dashboard/BookingManagement'
+import BookingSuccess from './pages/BookingSuccess'
 import BranchManagement from './pages/dashboard/BranchManagement'
 import SearchResults from './pages/SearchResults'
 import VehicleDetails from './pages/VehicleDetails'
@@ -66,6 +67,7 @@ function App() {
         } />
 
         <Route path="/my-bookings" element={<MyBookings />} />
+        <Route path="/booking-success" element={<BookingSuccess />} />
 
         <Route path="/apply-agency" element={
           <>

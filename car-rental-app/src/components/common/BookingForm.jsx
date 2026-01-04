@@ -1,155 +1,260 @@
+
 import { useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 import apiClient from '../../api/apiClient';
+import { useAuth } from '../../context/AuthContext';
 
 export default function BookingForm({ vehicle, onClose }) {
-  const { isAuthenticated, user } = useAuth();
   const navigate = useNavigate();
-  const location = useLocation();
-  const searchParams = new URLSearchParams(location.search);
+  const { user } = useAuth();
+  
+  const today = new Date().toISOString().split('T')[0];
+  const tomorrow = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().split('T')[0];
 
-  const [bookingData, setBookingData] = useState({
-    vehicle_id: vehicle.id,
-    start_date: searchParams.get('pickupDate') || new Date().toISOString().split('T')[0],
-    end_date: searchParams.get('dropoffDate') || new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-    pickup_location_id: vehicle.branch?.id || 1, // Default to vehicle branch
-    dropoff_location_id: vehicle.branch?.id || 1,
+  const [formData, setFormData] = useState({
+    start_date: today,
+    start_time: "10:00",
+    end_date: tomorrow,
+    end_time: "10:00",
+    pickup_location: "",
+    dropoff_location: ""
   });
 
+  const [branches, setBranches] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [success, setSuccess] = useState(false);
+  const [totalCost, setTotalCost] = useState(0);
+
+  // Fetch branches on mount
+  useEffect(() => {
+    const fetchBranches = async () => {
+      try {
+        const response = await apiClient.get('/api/branches/');
+        setBranches(response.data);
+        // Default to first branch if available
+        if (response.data.length > 0) {
+            setFormData(prev => ({
+                ...prev,
+                pickup_location: response.data[0].id,
+                dropoff_location: response.data[0].id
+            }));
+        }
+      } catch (err) {
+        console.error("Error fetching branches:", err);
+      }
+    };
+    fetchBranches();
+  }, []);
+
+  // Calculate total cost whenever dates change
+  useEffect(() => {
+    const start = new Date(`${formData.start_date}T${formData.start_time}`);
+    const end = new Date(`${formData.end_date}T${formData.end_time}`);
+    
+    if (end > start) {
+      const diffTime = Math.abs(end - start);
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      // Minimum 1 day
+      const daysToCharge = diffDays > 0 ? diffDays : 1;
+      setTotalCost(daysToCharge * parseFloat(vehicle.daily_rental_rate));
+    } else {
+      setTotalCost(0);
+    }
+  }, [formData.start_date, formData.start_time, formData.end_date, formData.end_time, vehicle.daily_rental_rate]);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!isAuthenticated) {
-      navigate('/login', { state: { from: location.pathname } });
-      return;
+    setError(null);
+
+    if (!user) {
+        // Build the current booking URL state to redirect back after login
+        // For now, just simple redirect
+        navigate('/login?redirect=' + window.location.pathname);
+        return;
     }
 
     try {
       setLoading(true);
-      setError(null);
       
-      // The backend expects ISO format or similar
-      // Assuming the input date is YYYY-MM-DD, we can add a default time
       const payload = {
-        vehicle_id: bookingData.vehicle_id,
-        pickup_location_id: bookingData.pickup_location_id,
-        dropoff_location_id: bookingData.dropoff_location_id,
-        start_date: `${bookingData.start_date}T10:00:00Z`,
-        end_date: `${bookingData.end_date}T10:00:00Z`,
+        vehicle: vehicle.id,
+        pickup_location: formData.pickup_location,
+        dropoff_location: formData.dropoff_location,
+        start_date: `${formData.start_date}T${formData.start_time}:00Z`,
+        end_date: `${formData.end_date}T${formData.end_time}:00Z`,
+        total_rental_cost: totalCost // Backend calculates this too, but good for UI sync
       };
 
       await apiClient.post('/api/bookings/', payload);
-      setSuccess(true);
-      setTimeout(() => {
-        onClose();
-        navigate('/dashboard'); // Go to customer dashboard (or home for now if dashboard is agency-only)
-      }, 2000);
+      navigate('/booking-success');
+      
     } catch (err) {
-      console.error("Booking failed:", err);
-      setError(err.response?.data?.message || err.response?.data?.detail || "Something went wrong. Please try again.");
+      console.error("Booking error:", err.response?.data);
+      const errorMsg = err.response?.data?.non_field_errors?.[0] 
+        || err.response?.data?.detail 
+        || "Booking failed. Please check your dates and try again.";
+      setError(errorMsg);
     } finally {
       setLoading(false);
     }
   };
 
-  const calculateDays = () => {
-    const start = new Date(bookingData.start_date);
-    const end = new Date(bookingData.end_date);
-    const diff = end - start;
-    return Math.max(1, Math.ceil(diff / (1000 * 60 * 60 * 24)));
-  };
-
-  const totalPrice = calculateDays() * parseFloat(vehicle.daily_rental_rate);
-
-  if (success) {
-    return (
-      <div className="text-center py-12">
-        <div className="w-20 h-20 bg-gray-900 rounded-full flex items-center justify-center mx-auto mb-6 text-white text-3xl animate-bounce">
-          <i className="fi fi-rr-check"></i>
-        </div>
-        <h3 className="text-2xl font-black text-gray-900 uppercase tracking-tighter">Reservation Sent!</h3>
-        <p className="text-gray-400 text-sm mt-2">Redirecting to your dashboard...</p>
-      </div>
-    );
-  }
-
   return (
-    <div className="p-8">
-      <div className="flex justify-between items-center mb-8">
-        <h3 className="text-xs font-black uppercase tracking-[0.2em] text-gray-900">Complete Reservation</h3>
-        <button onClick={onClose} className="text-gray-400 hover:text-gray-900 transition-colors">
+    <div className="bg-white h-full flex flex-col">
+      <div className="p-8 border-b border-gray-100 flex justify-between items-center bg-gray-50">
+        <div>
+           <h3 className="text-xl font-black text-gray-900 uppercase tracking-tight">Reserve Vehicle</h3>
+           <p className="text-xs text-gray-500 font-bold uppercase tracking-widest mt-1">{vehicle.make} {vehicle.model}</p>
+        </div>
+        <button onClick={onClose} className="h-10 w-10 bg-white rounded-xl flex items-center justify-center shadow-sm hover:bg-gray-100 transition-colors">
           <i className="fi fi-rr-cross-small text-xl"></i>
         </button>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <div className="p-8 overflow-y-auto flex-1 custom-scrollbar">
         {error && (
-          <div className="p-4 bg-red-50 border border-red-100 rounded-2xl text-red-600 text-[10px] font-black uppercase tracking-widest flex items-center gap-3">
-            <i className="fi fi-rr-exclamation"></i>
-            {error}
-          </div>
+            <div className="mb-6 p-4 bg-red-50 border border-red-100 rounded-xl text-red-600 text-xs font-bold flex items-center gap-3">
+                <i className="fi fi-rr-exclamation"></i>
+                {error}
+            </div>
         )}
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="space-y-3">
-            <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block">Pickup Date</label>
-            <input 
-              type="date" 
-              required
-              min={new Date().toISOString().split('T')[0]}
-              value={bookingData.start_date}
-              onChange={(e) => setBookingData({...bookingData, start_date: e.target.value})}
-              className="w-full bg-gray-50 border border-gray-100 px-5 py-4 rounded-2xl text-xs font-bold text-gray-900 outline-none focus:ring-2 focus:ring-gray-900 transition-all"
-            />
-          </div>
-          <div className="space-y-3">
-            <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block">Return Date</label>
-            <input 
-              type="date" 
-              required
-              min={bookingData.start_date}
-              value={bookingData.end_date}
-              onChange={(e) => setBookingData({...bookingData, end_date: e.target.value})}
-              className="w-full bg-gray-50 border border-gray-100 px-5 py-4 rounded-2xl text-xs font-bold text-gray-900 outline-none focus:ring-2 focus:ring-gray-900 transition-all"
-            />
-          </div>
-        </div>
+        <form id="booking-form" onSubmit={handleSubmit} className="space-y-6">
+            {/* Dates */}
+            <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                    <label className="text-[10px] font-black uppercase text-gray-400 tracking-widest">Start Date</label>
+                    <input 
+                        type="date" 
+                        name="start_date"
+                        value={formData.start_date}
+                        onChange={handleChange}
+                        min={today}
+                        className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl text-sm font-bold text-gray-900 focus:ring-2 focus:ring-gray-900 outline-none"
+                        required 
+                    />
+                </div>
+                <div className="space-y-2">
+                    <label className="text-[10px] font-black uppercase text-gray-400 tracking-widest">Time</label>
+                    <input 
+                        type="time" 
+                        name="start_time"
+                        value={formData.start_time}
+                        onChange={handleChange}
+                        className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl text-sm font-bold text-gray-900 focus:ring-2 focus:ring-gray-900 outline-none"
+                        required 
+                    />
+                </div>
+            </div>
 
-        {/* Summary Card */}
-        <div className="bg-gray-50 rounded-3xl p-6 border border-gray-100">
-          <div className="flex justify-between items-center mb-4">
-            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Duration</p>
-            <p className="text-sm font-black text-gray-900 uppercase tracking-tight">{calculateDays()} Days</p>
-          </div>
-          <div className="flex justify-between items-center pt-4 border-t border-gray-100">
-            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Estimated Total</p>
-            <p className="text-xl font-black text-gray-900 tracking-tighter">฿{totalPrice.toLocaleString()}</p>
-          </div>
+            <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                    <label className="text-[10px] font-black uppercase text-gray-400 tracking-widest">End Date</label>
+                    <input 
+                        type="date" 
+                        name="end_date"
+                        value={formData.end_date}
+                        onChange={handleChange}
+                        min={formData.start_date}
+                        className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl text-sm font-bold text-gray-900 focus:ring-2 focus:ring-gray-900 outline-none"
+                        required 
+                    />
+                </div>
+                <div className="space-y-2">
+                    <label className="text-[10px] font-black uppercase text-gray-400 tracking-widest">Time</label>
+                    <input 
+                        type="time" 
+                        name="end_time"
+                        value={formData.end_time}
+                        onChange={handleChange}
+                        className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl text-sm font-bold text-gray-900 focus:ring-2 focus:ring-gray-900 outline-none"
+                        required 
+                    />
+                </div>
+            </div>
+
+            {/* Locations */}
+            <div className="space-y-4 pt-4 border-t border-gray-100">
+                <div className="space-y-2">
+                    <label className="text-[10px] font-black uppercase text-gray-400 tracking-widest">Pickup Location</label>
+                    <div className="relative">
+                        <i className="fi fi-rr-marker absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                        <select 
+                            name="pickup_location"
+                            value={formData.pickup_location}
+                            onChange={handleChange}
+                            className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-100 rounded-xl text-sm font-bold text-gray-900 focus:ring-2 focus:ring-gray-900 outline-none appearance-none"
+                            required
+                        >
+                            <option value="">Select Pickup Branch</option>
+                            {branches.map(branch => (
+                                <option key={branch.id} value={branch.id}>{branch.name}</option>
+                            ))}
+                        </select>
+                    </div>
+                </div>
+
+                <div className="space-y-2">
+                    <label className="text-[10px] font-black uppercase text-gray-400 tracking-widest">Drop-off Location</label>
+                    <div className="relative">
+                        <i className="fi fi-rr-flag absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                        <select 
+                            name="dropoff_location"
+                            value={formData.dropoff_location}
+                            onChange={handleChange}
+                            className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-100 rounded-xl text-sm font-bold text-gray-900 focus:ring-2 focus:ring-gray-900 outline-none appearance-none"
+                            required
+                        >
+                             <option value="">Select Dropoff Branch</option>
+                            {branches.map(branch => (
+                                <option key={branch.id} value={branch.id}>{branch.name}</option>
+                            ))}
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </form>
+      </div>
+
+      <div className="p-8 border-t border-gray-100 bg-gray-50 mt-auto">
+        <div className="flex justify-between items-end mb-6">
+            <div>
+                <p className="text-[10px] uppercase font-black text-gray-400 tracking-widest mb-1">Total Estimated Cost</p>
+                <p className="text-xs text-gray-400 font-medium">Includes taxes & fees</p>
+            </div>
+            <div className="text-right">
+                <p className="text-3xl font-black text-gray-900 tracking-tighter">฿{totalCost.toLocaleString()}</p>
+            </div>
         </div>
 
         <button 
-          type="submit"
-          disabled={loading}
-          className="w-full bg-gray-900 text-white py-5 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-black transition-all shadow-xl shadow-gray-100 flex items-center justify-center gap-3 disabled:opacity-50"
+            type="submit" 
+            form="booking-form"
+            disabled={loading || totalCost <= 0}
+            className={`w-full py-4 rounded-xl font-bold uppercase tracking-widest shadow-xl transition-all flex items-center justify-center gap-3 ${
+                loading || totalCost <= 0 
+                ? 'bg-gray-200 text-gray-400 cursor-not-allowed shadow-none' 
+                : 'bg-gray-900 text-white hover:bg-black hover:scale-[1.02] shadow-gray-200'
+            }`}
         >
-          {loading ? (
-            <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-          ) : (
-            <>
-              <i className="fi fi-rr-check"></i>
-              Confirm & Request Rental
-            </>
-          )}
+            {loading ? (
+                <>
+                    <i className="fi fi-rr-spinner animate-spin"></i>
+                    Processing...
+                </>
+            ) : (
+                <>
+                    Confirm Booking
+                    <i className="fi fi-rr-arrow-right"></i>
+                </>
+            )}
         </button>
-        
-        <p className="text-[9px] text-center text-gray-400 font-bold uppercase tracking-widest">
-            {isAuthenticated ? `Booking as ${user?.name || user?.email}` : "You will be asked to login or register first"}
-        </p>
-      </form>
+      </div>
     </div>
   );
 }

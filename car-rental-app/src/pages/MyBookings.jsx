@@ -175,9 +175,9 @@ export default function MyBookings() {
                   <div className="flex flex-col md:flex-row gap-6">
                     {/* Vehicle Image */}
                     <div className="w-full md:w-40 h-28 bg-gray-50 rounded-2xl overflow-hidden flex-shrink-0">
-                      {booking.vehicle?.images?.[0]?.image ? (
+                      {booking.vehicle?.main_image ? (
                         <img 
-                          src={booking.vehicle.images[0].image} 
+                          src={booking.vehicle.main_image} 
                           alt={`${booking.vehicle?.make} ${booking.vehicle?.model}`}
                           className="w-full h-full object-cover"
                         />
