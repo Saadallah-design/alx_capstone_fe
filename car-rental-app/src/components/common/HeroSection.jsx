@@ -11,6 +11,7 @@ export default function HeroSection() {
 
   const [searchData, setSearchData] = useState({
     location: "",
+    type: "",
     pickupDate: today,
     pickupTime: "10:00",
     dropoffDate: twoDaysLater,
@@ -74,7 +75,7 @@ export default function HeroSection() {
         <div className="max-w-5xl mx-auto">
           <div className="bg-white rounded-2xl shadow-2xl p-6 md:p-8 backdrop-blur-sm bg-opacity-95">
             <form onSubmit={handleSearch}>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4 mb-6">
                 {/* Location */}
                 <div className="lg:col-span-2">
                   <label className="flex items-center gap-2 text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">
@@ -95,6 +96,25 @@ export default function HeroSection() {
                         </option>
                       ))}
                     </select>
+                </div>
+
+                {/* Vehicle Type */}
+                <div>
+                  <label className="flex items-center gap-2 text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">
+                    <i className="fi fi-rr-car-side text-gray-900"></i> Type
+                  </label>
+                  <select
+                    name="type"
+                    value={searchData.type}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+                  >
+                    <option value="">All Types</option>
+                    <option value="CAR">Cars</option>
+                    <option value="SCOOTER">Scooters</option>
+                    <option value="BIG_BIKE">Big Bikes</option>
+                    <option value="BICYCLE">Bicycles</option>
+                  </select>
                 </div>
 
                 {/* Pickup Date */}
