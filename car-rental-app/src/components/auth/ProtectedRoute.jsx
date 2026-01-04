@@ -18,7 +18,7 @@ export default function ProtectedRoute({ children, requiredRole }) {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-  if (requiredRole && user?.role !== requiredRole) {
+  if (requiredRole && user?.role !== requiredRole && !(requiredRole === 'AGENCY_ADMIN' && user?.role === 'AGENCY_STAFF')) {
     // Check if they are actually an agency applicant who is just not yet approved
     // (Assuming the backend might return role='CUSTOMER' but is_approved=false for applicants)
     if (requiredRole === 'AGENCY_ADMIN' && user?.is_pending_agency) {
@@ -34,7 +34,7 @@ export default function ProtectedRoute({ children, requiredRole }) {
   }
 
   // New: Even if role matches, check if approval is required and granted
-  if (requiredRole === 'AGENCY_ADMIN' && user?.role === 'AGENCY_ADMIN' && user?.is_approved === false) {
+  if ((user?.role === 'AGENCY_ADMIN' || user?.role === 'AGENCY_STAFF') && user?.is_approved === false) {
     return <Navigate to="/pending-approval" replace />;
   }
 

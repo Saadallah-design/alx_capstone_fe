@@ -13,11 +13,20 @@ export default function SearchResults() {
   
   // Filters
   const [filters, setFilters] = useState({
-    category: 'all',
+    vehicle_type: searchParams.get('type') || 'all',
     transmission: 'all',
     priceRange: 10000,
     branch: searchParams.get('location') || 'all',
   });
+
+  useEffect(() => {
+    // Update filters if URL params change (e.g. new search from home)
+    setFilters(prev => ({
+      ...prev,
+      vehicle_type: searchParams.get('type') || 'all',
+      branch: searchParams.get('location') || 'all',
+    }));
+  }, [location.search]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -37,13 +46,15 @@ export default function SearchResults() {
       }
     };
     fetchData();
-  }, [location.search]);
+  }, []);
 
   const filteredVehicles = vehicles.filter(v => {
     // API uses daily_rental_rate instead of price_per_day
     const price = parseFloat(v.daily_rental_rate || 0);
-    const categoryMatch = filters.category === 'all' || v.category?.toLowerCase() === filters.category.toLowerCase();
-    const transmissionMatch = filters.transmission === 'all' || v.transmission?.toLowerCase() === filters.transmission.toLowerCase();
+    // Use vehicle_type field from backend
+    const typeMatch = filters.vehicle_type === 'all' || v.vehicle_type === filters.vehicle_type;
+    // Transmission is nested in specs
+    const transmissionMatch = filters.transmission === 'all' || v.specs?.transmission?.toLowerCase() === filters.transmission.toLowerCase();
     const priceMatch = price <= filters.priceRange;
     
     // API returns branch_name string directly on the vehicle
@@ -52,7 +63,7 @@ export default function SearchResults() {
                        v.branch?.slug === filters.branch || 
                        v.branch?.id?.toString() === filters.branch;
     
-    return categoryMatch && transmissionMatch && priceMatch && branchMatch;
+    return typeMatch && transmissionMatch && priceMatch && branchMatch;
   });
 
   if (loading) {
@@ -112,15 +123,21 @@ export default function SearchResults() {
               <div className="mb-8">
                 <label className="text-[10px] font-black uppercase text-gray-400 tracking-widest mb-4 block">Vehicle Type</label>
                 <div className="space-y-2">
-                  {['all', 'Economy', 'SUV', 'Luxury', 'Motorbike'].map(cat => (
+                  {[
+                    { id: 'all', label: 'All Types' },
+                    { id: 'CAR', label: 'Cars' },
+                    { id: 'SCOOTER', label: 'Scooters' },
+                    { id: 'BIG_BIKE', label: 'Big Bikes' },
+                    { id: 'BICYCLE', label: 'Bicycles' }
+                  ].map(type => (
                     <button
-                      key={cat}
-                      onClick={() => setFilters(prev => ({ ...prev, category: cat }))}
+                      key={type.id}
+                      onClick={() => setFilters(prev => ({ ...prev, vehicle_type: type.id }))}
                       className={`w-full text-left px-4 py-3 rounded-xl text-xs font-bold transition-all ${
-                        filters.category === cat ? 'bg-gray-900 text-white shadow-lg shadow-gray-200' : 'text-gray-500 hover:bg-gray-50'
+                        filters.vehicle_type === type.id ? 'bg-gray-900 text-white shadow-lg shadow-gray-200' : 'text-gray-500 hover:bg-gray-50'
                       }`}
                     >
-                      {cat}
+                      {type.label}
                     </button>
                   ))}
                 </div>
@@ -181,7 +198,7 @@ export default function SearchResults() {
                 <h3 className="text-xl font-black text-gray-900 tracking-tight">No vehicles found</h3>
                 <p className="text-gray-400 text-sm max-w-xs mx-auto mt-2">Try adjusting your filters or search criteria to find what you're looking for.</p>
                 <button 
-                  onClick={() => setFilters({ category: 'all', transmission: 'all', priceRange: 5000 })}
+                  onClick={() => setFilters({ vehicle_type: 'all', transmission: 'all', priceRange: 10000, branch: 'all' })}
                   className="mt-8 px-8 py-3 bg-gray-900 text-white rounded-2xl font-bold hover:bg-black transition-all shadow-xl shadow-gray-200"
                 >
                   Clear All Filters

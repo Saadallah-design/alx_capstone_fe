@@ -132,10 +132,10 @@ export default function BookingManagement() {
                     <td className="px-8 py-6">
                       <div className="flex items-center gap-4">
                         <div className="h-12 w-12 bg-gray-900 rounded-xl flex items-center justify-center text-white font-black text-sm shadow-lg shadow-gray-200 group-hover:scale-105 transition-transform">
-                          {booking.user?.name?.[0] || 'U'}
+                          {booking.user_name?.[0] || 'U'}
                         </div>
                         <div>
-                          <p className="font-extrabold text-gray-900 tracking-tight leading-none">{booking.user?.name || 'Unknown User'}</p>
+                          <p className="font-extrabold text-gray-900 tracking-tight leading-none">{booking.user_name || booking.user_email || 'Guest'}</p>
                           <p className="text-xs font-bold text-gray-400 mt-1 uppercase tracking-tighter">
                             <i className="fi fi-rr-car-side mr-1 text-[10px]"></i>
                             {booking.vehicle?.make} {booking.vehicle?.model}

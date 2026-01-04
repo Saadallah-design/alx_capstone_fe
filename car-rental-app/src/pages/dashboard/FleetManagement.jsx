@@ -8,16 +8,26 @@ export default function FleetManagement() {
   const [error, setError] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [selectedImages, setSelectedImages] = useState([]);
+  const [imagePreviews, setImagePreviews] = useState([]);
+  const [editingVehicle, setEditingVehicle] = useState(null); // Null for Add mode, vehicle object for Edit mode
 
   const [formData, setFormData] = useState({
     make: '',
     model: '',
     year: new Date().getFullYear(),
     category: 'Economy',
-    transmission: 'Automatic',
-    fuel_type: 'Gasoline',
-    price_per_day: '',
+    transmission: 'AUTOMATIC',
+    fuel_type: 'PETROL',
+    vehicle_type: 'CAR',
+    daily_rental_rate: '',
+    licence_plate: '',
     branch_id: '',
+    // Specs
+    seats: 4,
+    engine_capacity_cc: '',
+    is_air_conditioned: true,
+    is_helmet_included: false,
   });
 
   useEffect(() => {
@@ -43,9 +53,23 @@ export default function FleetManagement() {
     fetchData();
   }, []);
 
+  const handleTypeChange = (value) => {
+    setFormData(prev => ({ 
+      ...prev, 
+      vehicle_type: value,
+      // Default adjustments based on type
+      seats: value === 'CAR' ? 4 : 2,
+      is_air_conditioned: value === 'CAR',
+      is_helmet_included: value !== 'CAR'
+    }));
+  };
+
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    const { name, value, type, checked } = e.target;
+    setFormData(prev => ({ 
+      ...prev, 
+      [name]: type === 'checkbox' ? checked : value 
+    }));
   };
 
   const handleSubmit = async (e) => {
@@ -54,25 +78,153 @@ export default function FleetManagement() {
     setError(null);
 
     try {
-      const response = await apiClient.post('/api/vehicles/', formData);
-      setVehicles(prev => [response.data, ...prev]);
-      setIsModalOpen(false);
-      setFormData({
-        make: '',
-        model: '',
-        year: new Date().getFullYear(),
-        category: 'Economy',
-        transmission: 'Automatic',
-        fuel_type: 'Gasoline',
-        price_per_day: '',
-        branch_id: branches[0]?.id || '',
+      // Structure the data for the backend (including nested specs)
+      const vehicleData = {
+        make: formData.make,
+        model: formData.model,
+        year: formData.year,
+        vehicle_type: formData.vehicle_type,
+        daily_rental_rate: formData.daily_rental_rate,
+        licence_plate: formData.licence_plate,
+        current_location: formData.branch_id,
+        specs: {
+          transmission: formData.transmission,
+          fuel_type: formData.fuel_type,
+          seats: formData.seats,
+          engine_capacity_cc: formData.engine_capacity_cc || null,
+          is_air_conditioned: formData.is_air_conditioned,
+          is_helmet_included: formData.is_helmet_included,
+        }
+      };
+
+      const formDataToSend = new FormData();
+      // Add vehicle data as a single JSON blob if your backend supports it, 
+      // or append fields individually if it expects flat multipart.
+      // Based on my recommendation, we'll append individual fields but structure flat for simplicity
+      // and let the user's manual backend update handle the nesting if they prefer.
+      // HOWEVER, let's try to match the "nested" expectation by sending them with dots or brackets if common,
+      // but since I gave the code for 'specs_data = validated_data.pop("specs")', 
+      // the best way is to send 'specs' as a JSON string IF the parser handles it, 
+      // OR send them as individual fields and reconstruct in the serializer.
+      
+      // Let's go with a hybrid: append flat fields but name them so they're easy to identify,
+      // OR send the whole data object as a JSON string under one key.
+      
+      // I'll append them individually for maximum compatibility with standard MultiPartParser
+      Object.keys(vehicleData).forEach(key => {
+        if (key === 'specs') {
+          // If the backend recom I gave is used, it expects a dict. 
+          // But FormData can only take strings/blobs. 
+          // So we send individual specs fields or the whole object as JSON.
+          formDataToSend.append('specs', JSON.stringify(vehicleData[key]));
+        } else {
+          formDataToSend.append(key, vehicleData[key]);
+        }
       });
+      
+      selectedImages.forEach((image) => {
+        formDataToSend.append('images', image);
+      });
+
+      let response;
+      if (editingVehicle) {
+        response = await apiClient.patch(`/api/vehicles/${editingVehicle.slug}/`, formDataToSend, {
+          headers: { 'Content-Type': 'multipart/form-data' },
+        });
+        setVehicles(prev => prev.map(v => v.id === editingVehicle.id ? response.data : v));
+      } else {
+        response = await apiClient.post('/api/vehicles/', formDataToSend, {
+          headers: { 'Content-Type': 'multipart/form-data' },
+        });
+        setVehicles(prev => [response.data, ...prev]);
+      }
+      
+      handleCloseModal();
     } catch (err) {
-      console.error("Error adding vehicle:", err);
-      setError(err.response?.data?.detail || "Failed to add vehicle. Please check the fields.");
+      console.error("Error saving vehicle:", err);
+      const msg = err.response?.data ? 
+        Object.entries(err.response.data).map(([k, v]) => `${k}: ${v}`).join(', ') : 
+        "Failed to save vehicle.";
+      setError(msg);
     } finally {
       setSubmitting(false);
     }
+  };
+
+  const handleDelete = async (vehicle) => {
+    if (!window.confirm(`Are you sure you want to delete the ${vehicle.make} ${vehicle.model}?`)) return;
+    
+    try {
+      await apiClient.delete(`/api/vehicles/${vehicle.slug}/`);
+      setVehicles(prev => prev.filter(v => v.id !== vehicle.id));
+    } catch (err) {
+      console.error("Error deleting vehicle:", err);
+      setError("Failed to delete vehicle. It might be linked to existing bookings.");
+    }
+  };
+
+  const handleEdit = (vehicle) => {
+    setEditingVehicle(vehicle);
+    setFormData({
+      make: vehicle.make,
+      model: vehicle.model,
+      year: vehicle.year,
+      category: vehicle.category || 'Economy',
+      transmission: vehicle.specs?.transmission || 'AUTOMATIC',
+      fuel_type: vehicle.specs?.fuel_type || 'PETROL',
+      vehicle_type: vehicle.vehicle_type || 'CAR',
+      daily_rental_rate: vehicle.daily_rental_rate || '',
+      licence_plate: vehicle.licence_plate || '',
+      branch_id: vehicle.current_location || '',
+      seats: vehicle.specs?.seats || (vehicle.vehicle_type === 'CAR' ? 4 : 2),
+      engine_capacity_cc: vehicle.specs?.engine_capacity_cc || '',
+      is_air_conditioned: vehicle.specs?.is_air_conditioned ?? true,
+      is_helmet_included: vehicle.specs?.is_helmet_included ?? false,
+    });
+    setImagePreviews(vehicle.images?.map(img => img.image) || []);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setEditingVehicle(null);
+    setFormData({
+      make: '',
+      model: '',
+      year: new Date().getFullYear(),
+      category: 'Economy',
+      transmission: 'AUTOMATIC',
+      fuel_type: 'PETROL',
+      vehicle_type: 'CAR',
+      daily_rental_rate: '',
+      licence_plate: '',
+      branch_id: branches[0]?.id || '',
+      seats: 4,
+      engine_capacity_cc: '',
+      is_air_conditioned: true,
+      is_helmet_included: false,
+    });
+    setSelectedImages([]);
+    setImagePreviews([]);
+  };
+
+  const handleImageChange = (e) => {
+    const files = Array.from(e.target.files);
+    if (files.length > 0) {
+      setSelectedImages(prev => [...prev, ...files]);
+      
+      // Create preview URLs
+      const newPreviews = files.map(file => URL.createObjectURL(file));
+      setImagePreviews(prev => [...prev, ...newPreviews]);
+    }
+  };
+
+  const removeImage = (index) => {
+    setSelectedImages(prev => prev.filter((_, i) => i !== index));
+    setImagePreviews(prev => {
+      URL.revokeObjectURL(prev[index]); // Clean up memory
+      return prev.filter((_, i) => i !== index);
+    });
   };
 
   if (loading) {
@@ -103,9 +255,11 @@ export default function FleetManagement() {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden max-h-[90vh] flex flex-col">
             <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
-              <h3 className="text-xl font-bold text-gray-900">Add New Vehicle</h3>
+              <h3 className="text-xl font-bold text-gray-900">
+                {editingVehicle ? `Edit ${editingVehicle.make} ${editingVehicle.model}` : 'Add New Vehicle'}
+              </h3>
               <button 
-                onClick={() => setIsModalOpen(false)}
+                onClick={handleCloseModal}
                 className="text-gray-400 hover:text-gray-900 transition-colors p-2 rounded-full hover:bg-gray-100 flex items-center justify-center"
               >
                 <i className="fi fi-rr-cross-small text-xl"></i>
@@ -132,85 +286,195 @@ export default function FleetManagement() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-3 gap-4">
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-1">Year</label>
-                  <input 
-                    type="number" name="year" required value={formData.year} onChange={handleChange}
-                    className="w-full px-4 py-2.5 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-1">Price / Day (฿)</label>
-                  <input 
-                    type="number" name="price_per_day" required value={formData.price_per_day} onChange={handleChange}
-                    className="w-full px-4 py-2.5 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-1">Transmission</label>
-                  <select 
-                    name="transmission" value={formData.transmission} onChange={handleChange}
-                    className="w-full px-4 py-2.5 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-                  >
-                    <option value="Automatic">Automatic</option>
-                    <option value="Manual">Manual</option>
-                  </select>
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">Vehicle Type</label>
+                <div className="grid grid-cols-4 gap-3">
+                  {[
+                    { id: 'CAR', label: 'Car', icon: 'fi-rr-car' },
+                    { id: 'SCOOTER', label: 'Scooter', icon: 'fi-rr-motorcycle' },
+                    { id: 'BIG_BIKE', label: 'Big Bike', icon: 'fi-rr-motorcycle' },
+                    { id: 'BICYCLE', label: 'Bicycle', icon: 'fi-rr-bicycle' }
+                  ].map(type => (
+                    <label 
+                      key={type.id}
+                      className={`flex flex-col items-center justify-center gap-2 p-3 rounded-2xl border-2 transition-all cursor-pointer ${formData.vehicle_type === type.id ? 'border-gray-900 bg-gray-50 text-gray-900' : 'border-gray-100 hover:border-gray-200 text-gray-400'}`}
+                    >
+                      <input 
+                        type="radio" name="vehicle_type" value={type.id} 
+                        checked={formData.vehicle_type === type.id} 
+                        onChange={() => handleTypeChange(type.id)} className="hidden" 
+                      />
+                      <i className={`fi ${type.icon} text-xl`}></i>
+                      <span className="text-[10px] font-bold uppercase tracking-wider">{type.label}</span>
+                    </label>
+                  ))}
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-1">Fuel Type</label>
-                  <select 
-                    name="fuel_type" value={formData.fuel_type} onChange={handleChange}
-                    className="w-full px-4 py-2.5 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-                  >
-                    <option value="Gasoline">Gasoline</option>
-                    <option value="Diesel">Diesel</option>
-                    <option value="Electric">Electric</option>
-                    <option value="Hybrid">Hybrid</option>
-                  </select>
+                  <label className="block text-sm font-semibold text-gray-700 mb-1">Licence Plate</label>
+                  <input 
+                    name="licence_plate" required value={formData.licence_plate} onChange={handleChange}
+                    className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all outline-none"
+                    placeholder="e.g. ABC-1234"
+                  />
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-1">Category</label>
+                  <label className="block text-sm font-semibold text-gray-700 mb-1">Branch Location</label>
                   <select 
-                    name="category" value={formData.category} onChange={handleChange}
-                    className="w-full px-4 py-2.5 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                    name="branch_id" required value={formData.branch_id} onChange={handleChange}
+                    className="w-full px-4 py-2.5 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-gray-900 bg-white"
                   >
-                    <option value="Economy">Economy</option>
-                    <option value="Sedan">Sedan</option>
-                    <option value="SUV">SUV</option>
-                    <option value="Luxury">Luxury</option>
-                    <option value="Van">Van</option>
+                    <option value="">Select a branch</option>
+                    {branches.map(branch => (
+                      <option key={branch.id} value={branch.id}>{branch.name}</option>
+                    ))}
                   </select>
                 </div>
               </div>
 
+              <div className="grid grid-cols-3 gap-4">
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-1">Year</label>
+                  <input 
+                    type="number" name="year" required value={formData.year} onChange={handleChange}
+                    className="w-full px-4 py-2.5 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-gray-900"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-1">Price / Day (฿)</label>
+                  <input 
+                    type="number" name="daily_rental_rate" required value={formData.daily_rental_rate} onChange={handleChange}
+                    className="w-full px-4 py-2.5 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-gray-900"
+                  />
+                </div>
+                <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-1">Seats</label>
+                    <input 
+                      type="number" name="seats" required value={formData.seats} onChange={handleChange}
+                      className="w-full px-4 py-2.5 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-gray-900"
+                    />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4 border-t border-gray-50 pt-4">
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-1">Transmission</label>
+                  <select 
+                    name="transmission" value={formData.transmission} onChange={handleChange}
+                    className="w-full px-4 py-2.5 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-gray-900 bg-white"
+                  >
+                    <option value="AUTOMATIC">Automatic</option>
+                    <option value="MANUAL">Manual</option>
+                    <option value="SEMI_AUTOMATIC">Semi-Automatic</option>
+                    <option value="NA">N/A</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-1">Fuel Type</label>
+                  <select 
+                    name="fuel_type" value={formData.fuel_type} onChange={handleChange}
+                    className="w-full px-4 py-2.5 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-gray-900 bg-white"
+                  >
+                    <option value="PETROL">Petrol</option>
+                    <option value="DIESEL">Diesel</option>
+                    <option value="ELECTRIC">Electric</option>
+                    <option value="HYBRID">Hybrid</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                {(formData.vehicle_type === 'SCOOTER' || formData.vehicle_type === 'BIG_BIKE') && (
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-1">Engine CC</label>
+                    <input 
+                      type="number" name="engine_capacity_cc" value={formData.engine_capacity_cc} onChange={handleChange}
+                      className="w-full px-4 py-2.5 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-gray-900"
+                      placeholder="e.g. 150"
+                    />
+                  </div>
+                )}
+                {formData.vehicle_type === 'CAR' && (
+                   <label className="flex items-center gap-2 cursor-pointer group pt-6">
+                        <input 
+                            type="checkbox" name="is_air_conditioned" 
+                            checked={formData.is_air_conditioned} onChange={handleChange}
+                            className="w-5 h-5 rounded border-gray-300 text-gray-900 focus:ring-gray-900"
+                        />
+                        <span className="text-sm font-semibold text-gray-700 group-hover:text-gray-900">Air Conditioned</span>
+                    </label>
+                )}
+                {(formData.vehicle_type === 'SCOOTER' || formData.vehicle_type === 'BIG_BIKE') && (
+                   <label className="flex items-center gap-2 cursor-pointer group pt-6">
+                        <input 
+                            type="checkbox" name="is_helmet_included" 
+                            checked={formData.is_helmet_included} onChange={handleChange}
+                            className="w-5 h-5 rounded border-gray-300 text-gray-900 focus:ring-gray-900"
+                        />
+                        <span className="text-sm font-semibold text-gray-700 group-hover:text-gray-900">Helmet Included</span>
+                    </label>
+                )}
+              </div>
+
+              {/* Image Upload Section */}
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Pickup Location (Branch)</label>
-                <select 
-                  name="branch_id" required value={formData.branch_id} onChange={handleChange}
-                  className="w-full px-4 py-2.5 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-                >
-                  {branches.map(branch => (
-                    <option key={branch.id} value={branch.id}>{branch.name}</option>
-                  ))}
-                </select>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">Vehicle Images</label>
+                <div className="border-2 border-dashed border-gray-200 rounded-xl p-4 hover:border-blue-400 transition-colors">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    onChange={handleImageChange}
+                    className="hidden"
+                    id="vehicle-images"
+                  />
+                  <label 
+                    htmlFor="vehicle-images" 
+                    className="flex flex-col items-center justify-center cursor-pointer py-4"
+                  >
+                    <i className="fi fi-rr-picture text-3xl text-gray-300 mb-2"></i>
+                    <span className="text-sm font-medium text-gray-500">Click to upload images</span>
+                    <span className="text-xs text-gray-400 mt-1">PNG, JPG up to 10MB each</span>
+                  </label>
+                </div>
+                
+                {/* Image Previews */}
+                {imagePreviews.length > 0 && (
+                  <div className="mt-4 grid grid-cols-4 gap-3">
+                    {imagePreviews.map((preview, index) => (
+                      <div key={index} className="relative group">
+                        <img 
+                          src={preview} 
+                          alt={`Preview ${index + 1}`} 
+                          className="w-full h-20 object-cover rounded-lg border border-gray-100"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => removeImage(index)}
+                          className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full text-xs flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-lg"
+                        >
+                          ×
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
 
               <div className="pt-4 border-t border-gray-100 flex justify-end space-x-3">
                 <button 
-                  type="button" onClick={() => setIsModalOpen(false)}
+                  type="button" onClick={handleCloseModal}
                   className="px-6 py-2.5 text-sm font-bold text-gray-600 hover:bg-gray-100 rounded-xl transition-colors"
                 >
                   Cancel
                 </button>
                 <button 
                   type="submit" disabled={submitting}
-                  className={`px-8 py-2.5 text-sm font-bold text-white bg-blue-600 rounded-xl shadow-lg shadow-blue-200 hover:bg-blue-700 transition-all ${submitting ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  className={`px-8 py-2.5 text-sm font-bold text-white bg-gray-900 rounded-xl shadow-lg shadow-gray-200 hover:bg-black transition-all ${submitting ? 'opacity-50 cursor-not-allowed' : ''}`}
                 >
-                  {submitting ? 'Adding...' : 'Add Vehicle'}
+                  {submitting ? 'Saving...' : editingVehicle ? 'Update Vehicle' : 'Add Vehicle'}
                 </button>
               </div>
             </form>
@@ -265,19 +529,25 @@ export default function FleetManagement() {
                 <div className="flex justify-between items-start mb-2">
                   <div>
                     <h3 className="text-lg font-bold text-gray-900">{vehicle.make} {vehicle.model}</h3>
-                    <p className="text-sm text-gray-500">{vehicle.year} • {vehicle.transmission}</p>
+                    <p className="text-sm text-gray-500">{vehicle.year} • {vehicle.specs?.transmission || vehicle.transmission}</p>
                   </div>
                   <div className="text-right">
-                    <p className="text-blue-600 font-bold text-lg">฿{vehicle.price_per_day}</p>
+                    <p className="text-gray-900 font-bold text-lg">฿{vehicle.daily_rental_rate}</p>
                     <p className="text-[10px] text-gray-400 uppercase font-bold tracking-tighter">per day</p>
                   </div>
                 </div>
 
                 <div className="flex items-center space-x-2 mt-4 pt-4 border-t border-gray-50">
-                  <button className="flex-1 py-2 text-sm font-semibold text-gray-700 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                  <button 
+                    onClick={() => handleEdit(vehicle)}
+                    className="flex-1 py-2 text-sm font-semibold text-gray-700 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+                  >
                     Edit
                   </button>
-                  <button className="p-2.5 text-gray-400 hover:text-red-500 bg-gray-50 hover:bg-red-50 rounded-xl transition-all duration-200">
+                  <button 
+                    onClick={() => handleDelete(vehicle)}
+                    className="p-2.5 text-gray-400 hover:text-red-500 bg-gray-50 hover:bg-red-50 rounded-xl transition-all duration-200"
+                  >
                     <i className="fi fi-rr-trash text-lg flex items-center"></i>
                   </button>
                 </div>
