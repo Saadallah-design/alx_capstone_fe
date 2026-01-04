@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import apiClient from '../api/apiClient';
 import Navbar from '../components/common/Navbar';
 
 export default function MyBookings() {
+  const navigate = useNavigate();
   const { user, isAuthenticated } = useAuth();
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -202,6 +203,14 @@ export default function MyBookings() {
                         <span className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border ${getStatusColor(booking.status)}`}>
                           {booking.status || 'Unknown'}
                         </span>
+                        {booking.status === 'PENDING' && (
+                            <button
+                                onClick={() => navigate('/payment', { state: { booking } })}
+                                className="px-4 py-1.5 bg-gray-900 text-white rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-black transition-all shadow-md shadow-gray-200 ml-2"
+                            >
+                                Pay Now
+                            </button>
+                        )}
                       </div>
 
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-xs">

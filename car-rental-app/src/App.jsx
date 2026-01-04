@@ -12,6 +12,7 @@ import DashboardLayout from './components/layout/DashboardLayout'
 import FleetManagement from './pages/dashboard/FleetManagement'
 import BookingManagement from './pages/dashboard/BookingManagement'
 import BookingSuccess from './pages/BookingSuccess'
+import PaymentPage from './pages/PaymentPage'
 import BranchManagement from './pages/dashboard/BranchManagement'
 import SearchResults from './pages/SearchResults'
 import VehicleDetails from './pages/VehicleDetails'
@@ -67,7 +68,11 @@ function App() {
         } />
 
         <Route path="/my-bookings" element={<MyBookings />} />
+        <Route path="/payment" element={<PaymentPage />} />
         <Route path="/booking-success" element={<BookingSuccess />} />
+        {/* Backend Redirect Compatibility Route */}
+        <Route path="/rentals/booking/:id/success/" element={<BookingSuccess />} />
+        <Route path="/rentals/booking/:id/cancel/" element={<MyBookings />} />
 
         <Route path="/apply-agency" element={
           <>
