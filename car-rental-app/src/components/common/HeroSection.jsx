@@ -57,14 +57,14 @@ export default function HeroSection() {
       {/* Content */}
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
         <div className="text-center mb-12">
-          <h1 className="text-5xl md:text-6xl lg:text-8xl font-black text-white mb-6 leading-none tracking-tighter">
+          <h1 className="text-4xl sm:text-6xl lg:text-8xl font-black text-white mb-6 leading-[0.9] tracking-tighter">
             DRIVE YOUR <br />
             <span className="text-gray-400">DREAMS</span>
           </h1>
-          <p className="text-lg md:text-xl text-gray-400 max-w-2xl mx-auto mb-4 font-medium">
+          <p className="text-base sm:text-lg md:text-xl text-gray-400 max-w-2xl mx-auto mb-6 font-medium px-4">
             Explore Phuket with absolute freedom. Premium rentals from trusted local partners.
           </p>
-          <div className="flex justify-center gap-4 text-xs font-bold text-gray-500 uppercase tracking-widest">
+          <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 text-[10px] font-bold text-gray-500 uppercase tracking-widest px-4">
             <span>• Verified Fleet</span>
             <span>• 24/7 VIP Support</span>
             <span>• Best Rates</span>
@@ -73,19 +73,19 @@ export default function HeroSection() {
 
         {/* Search Form Card */}
         <div className="max-w-5xl mx-auto">
-          <div className="bg-white rounded-2xl shadow-2xl p-6 md:p-8 backdrop-blur-sm bg-opacity-95">
+          <div className="bg-white rounded-3xl shadow-2xl p-6 sm:p-8 backdrop-blur-sm bg-opacity-95 mx-2 sm:mx-0">
             <form onSubmit={handleSearch}>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4 mb-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-6 mb-8">
                 {/* Location */}
-                <div className="lg:col-span-2">
-                  <label className="flex items-center gap-2 text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">
+                <div className="sm:col-span-2 lg:col-span-2">
+                  <label className="flex items-center gap-2 text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3">
                     <i className="fi fi-rr-marker text-gray-900"></i> Pickup Location
                   </label>
                     <select
                       name="location"
                       value={searchData.location}
                       onChange={handleInputChange}
-                      className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+                      className="w-full px-4 py-4 rounded-xl border border-gray-200 focus:ring-2 focus:ring-gray-900 focus:border-transparent outline-none transition-all text-sm font-bold bg-gray-50/50"
                       required
                       disabled={loading}
                     >
@@ -99,15 +99,15 @@ export default function HeroSection() {
                 </div>
 
                 {/* Vehicle Type */}
-                <div>
-                  <label className="flex items-center gap-2 text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">
+                <div className="sm:col-span-1 lg:col-span-1">
+                  <label className="flex items-center gap-2 text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3">
                     <i className="fi fi-rr-car-side text-gray-900"></i> Type
                   </label>
                   <select
                     name="type"
                     value={searchData.type}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+                    className="w-full px-4 py-4 rounded-xl border border-gray-200 focus:ring-2 focus:ring-gray-900 focus:border-transparent outline-none transition-all text-sm font-bold bg-gray-50/50"
                   >
                     <option value="">All Types</option>
                     <option value="CAR">Cars</option>
@@ -118,8 +118,8 @@ export default function HeroSection() {
                 </div>
 
                 {/* Pickup Date */}
-                <div>
-                  <label className="flex items-center gap-2 text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">
+                <div className="sm:col-span-1 lg:col-span-1">
+                  <label className="flex items-center gap-2 text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3">
                     <i className="fi fi-rr-calendar text-gray-900"></i> Pickup Date
                   </label>
                   <input
@@ -128,14 +128,14 @@ export default function HeroSection() {
                     value={searchData.pickupDate}
                     onChange={handleInputChange}
                     min={new Date().toISOString().split('T')[0]}
-                    className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+                    className="w-full px-4 py-4 rounded-xl border border-gray-200 focus:ring-2 focus:ring-gray-900 focus:border-transparent outline-none transition-all text-sm font-bold bg-gray-50/50"
                     required
                   />
                 </div>
 
                 {/* Pickup Time */}
-                <div>
-                  <label className="flex items-center gap-2 text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">
+                <div className="sm:col-span-1 lg:col-span-1">
+                  <label className="flex items-center gap-2 text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3">
                     <i className="fi fi-rr-clock text-gray-900"></i> Time
                   </label>
                   <input
@@ -143,14 +143,14 @@ export default function HeroSection() {
                     name="pickupTime"
                     value={searchData.pickupTime}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+                    className="w-full px-4 py-4 rounded-xl border border-gray-200 focus:ring-2 focus:ring-gray-900 focus:border-transparent outline-none transition-all text-sm font-bold bg-gray-50/50"
                     required
                   />
                 </div>
 
                 {/* Dropoff Date */}
-                <div>
-                  <label className="flex items-center gap-2 text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">
+                <div className="sm:col-span-1 lg:col-span-1">
+                  <label className="flex items-center gap-2 text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3">
                     <i className="fi fi-rr-calendar-check text-gray-900"></i> Return Date
                   </label>
                   <input
@@ -159,7 +159,7 @@ export default function HeroSection() {
                     value={searchData.dropoffDate}
                     onChange={handleInputChange}
                     min={searchData.pickupDate || new Date().toISOString().split('T')[0]}
-                    className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+                    className="w-full px-4 py-4 rounded-xl border border-gray-200 focus:ring-2 focus:ring-gray-900 focus:border-transparent outline-none transition-all text-sm font-bold bg-gray-50/50"
                     required
                   />
                 </div>

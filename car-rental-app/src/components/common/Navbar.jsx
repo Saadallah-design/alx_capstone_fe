@@ -102,7 +102,7 @@ export default function Navbar({
   const [avatarError, setAvatarError] = useState(false);
 
   return (
-    <nav className="bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between relative shadow-sm">
+    <nav className="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-gray-200 px-4 py-3 flex items-center justify-between shadow-sm">
       {/* Logo */}
       <Link to="/" className="flex items-center gap-2">
         <div className="h-9 w-9 bg-gray-900 rounded-xl flex items-center justify-center shadow-lg shadow-gray-200">
@@ -281,27 +281,56 @@ export default function Navbar({
           ))}
           
           {user ? (
-            <button
-              className="block w-full text-left px-4 py-3 text-red-600 font-medium hover:bg-gray-50 transition-colors"
-              onClick={() => {
-                handleNavClick();
-                logout();
-              }}
-            >
-              Log Out
-            </button>
+            <>
+              <div className="px-4 py-3 border-b border-gray-100 bg-gray-50/50">
+                <div className="font-bold text-gray-900">{user.name}</div>
+                <div className="text-xs text-gray-500">{user.email}</div>
+              </div>
+              <Link
+                to={isAgency ? "/dashboard/profile" : "/profile"}
+                className="block px-4 py-3 border-b border-gray-100 text-gray-700 hover:bg-gray-50 transition-colors"
+                onClick={handleNavClick}
+              >
+                My Profile
+              </Link>
+              {!isAgency && (
+                <Link
+                  to="/my-bookings"
+                  className="block px-4 py-3 border-b border-gray-100 text-gray-700 hover:bg-gray-50 transition-colors"
+                  onClick={handleNavClick}
+                >
+                  My Bookings
+                </Link>
+              )}
+              <Link
+                to="/settings"
+                className="block px-4 py-3 border-b border-gray-100 text-gray-700 hover:bg-gray-50 transition-colors"
+                onClick={handleNavClick}
+              >
+                Settings
+              </Link>
+              <button
+                className="block w-full text-left px-4 py-4 text-red-600 font-bold hover:bg-red-50 transition-all border-t border-gray-100 mt-2"
+                onClick={() => {
+                  handleNavClick();
+                  logout();
+                }}
+              >
+                Log Out
+              </button>
+            </>
           ) : (
             <>
               <Link
                 to="/login"
-                className="block px-4 py-3 border-b border-gray-100 text-gray-700 hover:bg-gray-50 transition-colors"
+                className="block px-4 py-4 border-b border-gray-100 text-gray-900 font-bold hover:bg-gray-50 transition-colors"
                 onClick={handleNavClick}
               >
                 Log In
               </Link>
               <Link
                 to="/register"
-                className="block px-4 py-3 text-blue-600 font-semibold hover:bg-gray-50 transition-colors"
+                className="block px-4 py-4 text-white bg-gray-900 font-bold text-center m-4 rounded-xl shadow-lg"
                 onClick={handleNavClick}
               >
                 Sign Up

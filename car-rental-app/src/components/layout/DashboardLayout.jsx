@@ -29,27 +29,36 @@ const getMenuItems = (role) => {
 export default function DashboardLayout({ children }) {
   const { user, agency, logout } = useAuth();
   const location = useLocation();
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const menuItems = getMenuItems(user?.role);
 
   return (
-    <div className="flex h-screen bg-gray-50 font-sans">
+    <div className="flex h-screen bg-gray-50 font-sans overflow-hidden">
+      {/* Mobile Sidebar Overlay */}
+      {isSidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-gray-900/40 backdrop-blur-sm z-20 lg:hidden transition-opacity"
+          onClick={() => setIsSidebarOpen(false)}
+        ></div>
+      )}
+
       {/* Sidebar */}
       <aside 
-        className={`${
-          isSidebarOpen ? 'w-64' : 'w-20'
-        } bg-white shadow-sm border-r border-gray-100 transition-all duration-300 flex flex-col z-20`}
+        className={`
+          ${isSidebarOpen ? 'translate-x-0 w-64' : '-translate-x-full w-64 lg:translate-x-0 lg:w-20'} 
+          ${isSidebarOpen && 'lg:w-64'}
+          fixed lg:relative bg-white shadow-sm border-r border-gray-100 transition-all duration-300 flex flex-col z-30 h-full
+        `}
       >
         <div className="p-6 border-b border-gray-50 flex items-center justify-between">
-          {isSidebarOpen && (
-            <div className="flex items-center gap-2">
-              <div className="h-8 w-8 bg-gray-900 rounded-lg flex items-center justify-center">
-                <i className="fi fi-br-shield-check text-white text-xs"></i>
-              </div>
-              <span className="font-bold text-lg text-gray-900 tracking-tight">Agency Portal</span>
+          <div className={`${!isSidebarOpen && 'lg:hidden'} flex items-center gap-2`}>
+            <div className="h-8 w-8 bg-gray-900 rounded-lg flex items-center justify-center">
+              <i className="fi fi-br-shield-check text-white text-xs"></i>
             </div>
-          )}
+            <span className="font-bold text-lg text-gray-900 tracking-tight">Agency Portal</span>
+          </div>
+          
           <button 
             onClick={() => setIsSidebarOpen(!isSidebarOpen)}
             className="p-2 rounded-lg hover:bg-gray-50 text-gray-400 hover:text-gray-900 transition-all"
@@ -62,10 +71,13 @@ export default function DashboardLayout({ children }) {
           <ul className="space-y-1.5 px-3">
             {menuItems.map((item) => {
               const isActive = location.pathname === item.path;
+              const showLabel = isSidebarOpen;
+
               return (
                 <li key={item.id}>
                   <Link
                     to={item.path}
+                    onClick={() => window.innerWidth < 1024 && setIsSidebarOpen(false)}
                     className={`flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-200 group ${
                       isActive 
                         ? 'bg-gray-900 text-white shadow-lg shadow-gray-200' 
@@ -73,7 +85,7 @@ export default function DashboardLayout({ children }) {
                     }`}
                   >
                     <i className={`${item.icon} text-lg flex items-center justify-center ${isActive ? 'text-white' : 'group-hover:text-gray-900'}`}></i>
-                    {isSidebarOpen && <span className="font-semibold text-sm">{item.label}</span>}
+                    <span className={`${!showLabel && 'lg:hidden'} font-semibold text-sm`}>{item.label}</span>
                   </Link>
                 </li>
               );
@@ -87,18 +99,27 @@ export default function DashboardLayout({ children }) {
             className={`flex items-center gap-4 px-4 py-3 rounded-xl text-gray-500 hover:bg-red-50 hover:text-red-600 transition-all w-full group`}
           >
             <i className="fi fi-rr-exit text-lg flex items-center"></i>
-            {isSidebarOpen && <span className="font-semibold text-sm">Sign Out</span>}
+            <span className={`${!isSidebarOpen && 'lg:hidden'} font-semibold text-sm`}>Sign Out</span>
           </button>
         </div>
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 flex flex-col overflow-hidden">
+      <main className="flex-1 flex flex-col overflow-hidden w-full">
         {/* Top Header */}
-        <header className="h-16 bg-white border-b flex items-center justify-between px-8 shadow-sm">
-          <h1 className="text-xl font-bold text-gray-800">
-            {menuItems.find(i => i.path === location.pathname)?.label || 'Dashboard'}
-          </h1>
+        <header className="h-16 bg-white border-b flex items-center justify-between px-4 lg:px-8 shadow-sm">
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => setIsSidebarOpen(true)}
+              className="p-2 lg:hidden text-gray-500 hover:bg-gray-50 rounded-lg transition-colors"
+            >
+              <i className="fi fi-rr-menu-burger text-xl flex items-center"></i>
+            </button>
+            <h1 className="text-lg lg:text-xl font-bold text-gray-800 truncate">
+              {menuItems.find(i => i.path === location.pathname)?.label || 'Dashboard'}
+            </h1>
+          </div>
+
           <div className="flex items-center gap-4">
             <div className="text-right hidden sm:block">
               <p className="text-sm font-bold text-gray-900">{user?.agency_name || user?.email}</p>
@@ -111,7 +132,7 @@ export default function DashboardLayout({ children }) {
         </header>
 
         {/* Dynamic Page Content */}
-        <section className="flex-1 overflow-y-auto p-8">
+        <section className="flex-1 overflow-y-auto p-4 lg:p-8">
           <div className="max-w-7xl mx-auto">
             {user?.role === 'AGENCY_ADMIN' && !agency ? (
               <AgencySetup />

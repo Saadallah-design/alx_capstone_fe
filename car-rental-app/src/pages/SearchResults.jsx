@@ -18,6 +18,7 @@ export default function SearchResults() {
     priceRange: 10000,
     branch: searchParams.get('location') || 'all',
   });
+  const [showFiltersMobile, setShowFiltersMobile] = useState(false);
 
   useEffect(() => {
     // Update filters if URL params change (e.g. new search from home)
@@ -26,6 +27,8 @@ export default function SearchResults() {
       vehicle_type: searchParams.get('type') || 'all',
       branch: searchParams.get('location') || 'all',
     }));
+    // Close mobile filters on navigation/search
+    setShowFiltersMobile(false);
   }, [location.search]);
 
   useEffect(() => {
@@ -88,20 +91,52 @@ export default function SearchResults() {
     <div className="min-h-screen bg-gray-50 py-12 px-4 font-sans">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="mb-12">
-          <h2 className="text-4xl font-black text-gray-900 tracking-tighter uppercase">Available Fleet</h2>
-          <p className="text-gray-400 font-bold text-xs uppercase tracking-widest mt-2">
-            Showing {filteredVehicles.length} vehicles matching your search
-          </p>
+        <div className="mb-8 lg:mb-12 flex flex-col md:flex-row md:items-end md:justify-between gap-6">
+          <div>
+            <h2 className="text-3xl lg:text-4xl font-black text-gray-900 tracking-tighter uppercase leading-none">Available Fleet</h2>
+            <p className="text-gray-400 font-bold text-[10px] uppercase tracking-widest mt-3">
+              Showing {filteredVehicles.length} vehicles matching your search
+            </p>
+          </div>
+          
+          {/* Mobile Filter Toggle */}
+          <button 
+            onClick={() => setShowFiltersMobile(true)}
+            className="lg:hidden w-full bg-white border border-gray-100 py-4 rounded-2xl flex items-center justify-center gap-3 text-[10px] font-black uppercase tracking-widest text-gray-900 shadow-sm transition-all active:scale-95"
+          >
+            <i className="fi fi-rr-settings-sliders"></i>
+            Filter Vehicles
+          </button>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+          {/* Mobile Filters Overlay */}
+          {showFiltersMobile && (
+            <div 
+              className="fixed inset-0 bg-gray-900/60 backdrop-blur-sm z-[60] lg:hidden"
+              onClick={() => setShowFiltersMobile(false)}
+            ></div>
+          )}
+
           {/* Filters Sidebar */}
-          <aside className="space-y-8">
-            <div className="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm sticky top-24">
-              <div className="flex items-center gap-3 mb-8">
-                <i className="fi fi-rr-settings-sliders text-gray-900"></i>
-                <h3 className="text-xs font-black uppercase tracking-widest text-gray-900">Refine Search</h3>
+          <aside className={`
+            ${showFiltersMobile ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+            fixed lg:sticky inset-y-0 left-0 w-[280px] sm:w-[320px] lg:w-full h-full lg:h-auto lg:top-24 z-[70] lg:z-0
+            bg-white lg:bg-transparent transition-all duration-300 overflow-y-auto lg:overflow-visible
+            p-8 lg:p-0 border-r lg:border-none border-gray-100 lg:block
+          `}>
+            <div className="bg-white lg:p-8 lg:rounded-3xl lg:border lg:border-gray-100 lg:shadow-sm">
+              <div className="flex items-center justify-between mb-8">
+                <div className="flex items-center gap-3">
+                  <i className="fi fi-rr-settings-sliders text-gray-900"></i>
+                  <h3 className="text-[10px] font-black uppercase tracking-widest text-gray-900">Refine Search</h3>
+                </div>
+                <button 
+                  onClick={() => setShowFiltersMobile(false)}
+                  className="lg:hidden p-2 rounded-xl bg-gray-50 text-gray-400"
+                >
+                  <i className="fi fi-rr-cross-small text-xl flex items-center"></i>
+                </button>
               </div>
 
               {/* Location Filter */}
@@ -110,7 +145,7 @@ export default function SearchResults() {
                 <select
                   value={filters.branch}
                   onChange={(e) => setFilters(prev => ({ ...prev, branch: e.target.value }))}
-                  className="w-full bg-gray-50 border border-gray-100 px-4 py-3 rounded-xl text-xs font-bold text-gray-900 focus:ring-2 focus:ring-gray-900 outline-none transition-all"
+                  className="w-full bg-gray-50 border border-gray-100 px-4 py-4 rounded-xl text-xs font-bold text-gray-900 focus:ring-2 focus:ring-gray-900 outline-none transition-all"
                 >
                   <option value="all">Everywhere in Phuket</option>
                   {branches.map(branch => (
@@ -133,7 +168,7 @@ export default function SearchResults() {
                     <button
                       key={type.id}
                       onClick={() => setFilters(prev => ({ ...prev, vehicle_type: type.id }))}
-                      className={`w-full text-left px-4 py-3 rounded-xl text-xs font-bold transition-all ${
+                      className={`w-full text-left px-4 py-3.5 rounded-xl text-xs font-bold transition-all ${
                         filters.vehicle_type === type.id ? 'bg-gray-900 text-white shadow-lg shadow-gray-200' : 'text-gray-500 hover:bg-gray-50'
                       }`}
                     >
@@ -151,7 +186,7 @@ export default function SearchResults() {
                     <button
                       key={trans}
                       onClick={() => setFilters(prev => ({ ...prev, transmission: trans }))}
-                      className={`flex-1 px-3 py-3 rounded-xl text-[10px] font-black uppercase transition-all border ${
+                      className={`flex-1 px-2 py-3.5 rounded-xl text-[10px] font-black uppercase transition-all border ${
                         filters.transmission === trans ? 'bg-gray-900 border-gray-900 text-white shadow-lg shadow-gray-200' : 'bg-white border-gray-100 text-gray-500 hover:border-gray-900'
                       }`}
                     >
@@ -162,7 +197,7 @@ export default function SearchResults() {
               </div>
 
               {/* Price Range Filter */}
-              <div>
+              <div className="pb-4">
                 <label className="text-[10px] font-black uppercase text-gray-400 tracking-widest mb-4 block">Max Price: ฿{filters.priceRange}</label>
                 <input
                   type="range"
@@ -173,11 +208,19 @@ export default function SearchResults() {
                   onChange={(e) => setFilters(prev => ({ ...prev, priceRange: parseInt(e.target.value) }))}
                   className="w-full accent-gray-900 h-1 bg-gray-100 rounded-lg appearance-none cursor-pointer"
                 />
-                <div className="flex justify-between mt-2 text-[10px] font-bold text-gray-300">
+                <div className="flex justify-between mt-3 text-[10px] font-bold text-gray-300">
                   <span>฿0</span>
                   <span>฿10,000</span>
                 </div>
               </div>
+
+              {/* Mobile Filter Action */}
+              <button 
+                onClick={() => setShowFiltersMobile(false)}
+                className="lg:hidden w-full mt-8 bg-gray-900 text-white py-4 rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl shadow-gray-200"
+              >
+                Apply Filters
+              </button>
             </div>
           </aside>
 
