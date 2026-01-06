@@ -27,8 +27,8 @@ export default function BookingManagement() {
     // In a real app, this would be a PATCH to /api/bookings/{id}/
     // with status: 'Confirmed' or 'Cancelled'
     try {
-      const newStatus = action === 'approve' ? 'Confirmed' : 'Cancelled';
-      await apiClient.patch(`/api/bookings/${bookingId}/`, { status: newStatus });
+      const newStatus = action === 'approve' ? 'CONFIRMED' : 'CANCELLED';
+      await apiClient.patch(`/api/bookings/${bookingId}/`, { booking_status: newStatus });
       
       // Update local state
       setBookings(prev => prev.map(b => 
