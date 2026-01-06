@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import apiClient from '../../api/apiClient';
 import { useAuth } from '../../context/AuthContext';
+import Button from '../../components/common/Button';
 
 export default function BranchManagement() {
   const { user } = useAuth();
@@ -99,20 +100,11 @@ export default function BranchManagement() {
         setBranches(prev => [...prev, response.data]);
       }
       
-      setIsModalOpen(false);
-      setEditingBranch(null);
-      setFormData({ 
-        name: '', city: '', address: '', country: 'Thailand',
-        phone_number: '', email: '', opening_time: '08:00:00', 
-        closing_time: '20:00:00', is_pickup_point: true, 
-        is_dropoff_point: true, is_active: true 
-      });
+      closeModal();
     } catch (err) {
       console.error("Error saving branch:", err);
-      const errorMessage = err.response?.data ? 
-        Object.entries(err.response.data).map(([key, value]) => `${key}: ${value}`).join(', ') : 
-        "Failed to save branch. Please check the fields.";
-      setError(errorMessage);
+      // Basic error handling
+      setError("Failed to save branch. Please check your input.");
     } finally {
       setSubmitting(false);
     }
@@ -129,13 +121,11 @@ export default function BranchManagement() {
     });
   };
 
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center py-20">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
-      </div>
-    );
-  }
+  if (loading) return (
+    <div className="flex justify-center items-center h-64">
+       <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
+    </div>
+  );
 
   return (
     <div className="space-y-6">
@@ -145,7 +135,7 @@ export default function BranchManagement() {
           <p className="text-gray-500 text-sm">Manage the branches where customers can pick up vehicles.</p>
         </div>
         {isAdmin && (
-          <button 
+          <Button
             onClick={() => {
               setEditingBranch(null);
               setFormData({
@@ -156,11 +146,11 @@ export default function BranchManagement() {
               });
               setIsModalOpen(true);
             }}
-            className="flex items-center bg-gray-900 text-white px-6 py-3 rounded-2xl font-bold shadow-lg shadow-gray-200 hover:bg-black hover:scale-105 transition-all text-sm"
+            icon="fi fi-rr-plus"
+            size="md"
           >
-            <i className="fi fi-rr-plus mr-2 flex items-center"></i>
             Add New Branch
-          </button>
+          </Button>
         )}
       </div>
 
@@ -260,29 +250,33 @@ export default function BranchManagement() {
                     />
                     <span className="text-sm font-medium text-gray-700 group-hover:text-gray-900">Dropoff Point</span>
                 </label>
-                <label className="flex items-center gap-2 cursor-pointer group">
+                <label className="flex items-center gap-2 cursor-pointer group ml-auto">
                     <input 
                         type="checkbox" name="is_active" 
                         checked={formData.is_active} onChange={handleChange}
-                        className="w-5 h-5 rounded border-gray-300 text-gray-900 focus:ring-gray-900"
+                        className="w-5 h-5 rounded border-gray-300 text-emerald-600 focus:ring-emerald-600"
+                        title="Active Status"
                     />
                     <span className="text-sm font-medium text-gray-700 group-hover:text-gray-900">Active</span>
                 </label>
               </div>
 
-              <div className="pt-4 flex justify-end space-x-3 mt-auto">
-                <button 
-                  type="button" onClick={closeModal}
-                  className="px-6 py-2.5 text-sm font-bold text-gray-600 hover:bg-gray-100 rounded-xl transition-colors"
+              <div className="pt-4 border-t border-gray-100 flex gap-3">
+                <Button 
+                    type="button" 
+                    onClick={closeModal}
+                    variant="ghost"
+                    className="flex-1"
                 >
-                  Cancel
-                </button>
-                <button 
-                  type="submit" disabled={submitting}
-                  className={`px-8 py-2.5 text-sm font-bold text-white bg-gray-900 rounded-xl shadow-lg shadow-gray-200 hover:bg-black transition-all ${submitting ? 'opacity-50 cursor-not-allowed' : ''}`}
+                    Cancel
+                </Button>
+                <Button 
+                    type="submit" 
+                    isLoading={submitting}
+                    className="flex-1"
                 >
-                  {submitting ? (editingBranch ? 'Updating...' : 'Creating...') : (editingBranch ? 'Update Branch' : 'Create Branch')}
-                </button>
+                    {editingBranch ? 'Save Changes' : 'Create Branch'}
+                </Button>
               </div>
             </form>
           </div>
@@ -324,20 +318,24 @@ export default function BranchManagement() {
                </p>
                <div className="mt-6 pt-4 border-t border-gray-50 flex justify-between items-center">
                   {isAdmin ? (
-                    <>
-                      <button 
+                    <div className="flex gap-2 w-full justify-between">
+                      <Button
                         onClick={() => handleDelete(branch.slug)}
-                        className="text-xs font-bold text-red-400 hover:text-red-600 transition-colors uppercase tracking-widest"
+                        variant="danger"
+                        size="xs"
+                        className="!bg-transparent !border-0 !p-0 !text-red-400 hover:!text-red-600 uppercase tracking-widest"
                       >
                         Delete
-                      </button>
-                      <button 
+                      </Button>
+                      <Button
                         onClick={() => handleEdit(branch)}
-                        className="text-xs font-bold text-gray-400 hover:text-gray-900 transition-colors uppercase tracking-widest"
+                        variant="ghost"
+                        size="xs"
+                        className="!p-0 !text-gray-400 hover:!text-gray-900 uppercase tracking-widest"
                       >
                         Edit Settings
-                      </button>
-                    </>
+                      </Button>
+                    </div>
                   ) : (
                     <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest w-full text-center">
                       View Only

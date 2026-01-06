@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import apiClient from "../../api/apiClient";
+import Button from "./Button";
 
 export default function HeroSection() {
   const navigate = useNavigate();
@@ -98,25 +99,6 @@ export default function HeroSection() {
                     </select>
                 </div>
 
-                {/* Vehicle Type */}
-                <div className="sm:col-span-1 lg:col-span-1">
-                  <label className="flex items-center gap-2 text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3">
-                    <i className="fi fi-rr-car-side text-gray-900"></i> Type
-                  </label>
-                  <select
-                    name="type"
-                    value={searchData.type}
-                    onChange={handleInputChange}
-                    className="w-full px-4 py-4 rounded-xl border border-gray-200 focus:ring-2 focus:ring-gray-900 focus:border-transparent outline-none transition-all text-sm font-bold bg-gray-50/50"
-                  >
-                    <option value="">All Types</option>
-                    <option value="CAR">Cars</option>
-                    <option value="SCOOTER">Scooters</option>
-                    <option value="BIG_BIKE">Big Bikes</option>
-                    <option value="BICYCLE">Bicycles</option>
-                  </select>
-                </div>
-
                 {/* Pickup Date */}
                 <div className="sm:col-span-1 lg:col-span-1">
                   <label className="flex items-center gap-2 text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3">
@@ -127,7 +109,7 @@ export default function HeroSection() {
                     name="pickupDate"
                     value={searchData.pickupDate}
                     onChange={handleInputChange}
-                    min={new Date().toISOString().split('T')[0]}
+                    min={today}
                     className="w-full px-4 py-4 rounded-xl border border-gray-200 focus:ring-2 focus:ring-gray-900 focus:border-transparent outline-none transition-all text-sm font-bold bg-gray-50/50"
                     required
                   />
@@ -166,13 +148,14 @@ export default function HeroSection() {
               </div>
 
               {/* Search Button */}
-              <button
+              <Button
                 type="submit"
-                className="w-full bg-gray-900 hover:bg-black text-white font-bold py-5 px-8 rounded-2xl shadow-xl shadow-gray-200 transform hover:scale-[1.01] transition-all duration-300 flex items-center justify-center gap-3 text-lg uppercase tracking-tight"
+                size="xl"
+                icon="fi fi-rr-search"
+                className="w-full !rounded-2xl shadow-xl shadow-gray-200 transform hover:scale-[1.01] uppercase tracking-tight"
               >
-                <i className="fi fi-rr-search text-xl"></i>
                 Search Available Cars
-              </button>
+              </Button>
             </form>
 
             {/* Quick Info */}

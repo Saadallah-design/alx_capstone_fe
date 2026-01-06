@@ -3,6 +3,8 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import apiClient from '../api/apiClient';
 import Navbar from '../components/common/Navbar';
+import Button from '../components/common/Button';
+import Header from '../components/common/Header';
 
 export default function MyBookings() {
   const navigate = useNavigate();
@@ -84,11 +86,8 @@ export default function MyBookings() {
             </div>
             <h2 className="text-2xl font-black text-gray-900 tracking-tight uppercase">Login Required</h2>
             <p className="text-gray-400 mt-2 mb-8 max-w-sm">Please login to view your booking history.</p>
-            <Link 
-              to="/login" 
-              className="inline-block px-8 py-3 bg-gray-900 text-white rounded-2xl font-bold hover:bg-black transition-all shadow-xl shadow-gray-200"
-            >
-              Login Now
+            <Link to="/login">
+              <Button size="lg" icon="fi fi-rr-sign-in-alt">Login Now</Button>
             </Link>
           </div>
         </div>
@@ -102,19 +101,11 @@ export default function MyBookings() {
       <div className="min-h-screen bg-gray-50 py-12 px-4 font-sans">
         <div className="max-w-5xl mx-auto">
           {/* Header */}
-          <div className="mb-10">
-            <div className="flex items-center gap-3 text-[10px] font-black uppercase tracking-widest text-gray-400 mb-4">
-              <Link to="/" className="hover:text-gray-900 transition-colors">Home</Link>
-              <i className="fi fi-rr-angle-small-right"></i>
-              <span className="text-gray-900">My Bookings</span>
-            </div>
-            <h1 className="text-4xl md:text-5xl font-black text-gray-900 tracking-tighter uppercase">
-              My Rentals
-            </h1>
-            <p className="text-gray-400 text-sm mt-2">
-              Welcome back, <span className="font-bold text-gray-900">{user?.name || user?.email}</span>
-            </p>
-          </div>
+          <Header 
+            title="My Rentals"
+            subtitle={<span>Welcome back, <span className="font-bold text-gray-900">{user?.name || user?.email}</span></span>}
+            breadcrumbs={[{ label: 'My Bookings' }]}
+          />
 
           {/* Filter Tabs */}
           <div className="flex flex-wrap gap-2 mb-8">
@@ -171,11 +162,8 @@ export default function MyBookings() {
                   ? "You haven't made any rental bookings yet. Start exploring our fleet!"
                   : `No ${filter} bookings found.`}
               </p>
-              <Link 
-                to="/search" 
-                className="inline-block px-8 py-3 bg-gray-900 text-white rounded-2xl font-bold hover:bg-black transition-all shadow-xl shadow-gray-200"
-              >
-                Browse Fleet
+              <Link to="/search">
+                <Button size="lg" icon="fi fi-rr-car">Browse Fleet</Button>
               </Link>
             </div>
           )}
@@ -220,18 +208,22 @@ export default function MyBookings() {
                         </span>
                         {booking.status === 'PENDING' && (
                             <div className="flex gap-2 ml-2">
-                                <button
+                                <Button
                                     onClick={() => handleCancelBooking(booking.id)}
-                                    className="px-4 py-1.5 border border-red-200 text-red-500 rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-red-50 transition-all"
+                                    variant="danger"
+                                    size="xs"
+                                    icon="fi fi-rr-cross-small"
                                 >
                                     Cancel
-                                </button>
-                                <button
+                                </Button>
+                                <Button
                                     onClick={() => navigate('/payment', { state: { booking } })}
-                                    className="px-4 py-1.5 bg-gray-900 text-white rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-black transition-all shadow-md shadow-gray-200"
+                                    variant="primary"
+                                    size="xs"
+                                    icon="fi fi-rr-credit-card"
                                 >
                                     Pay Now
-                                </button>
+                                </Button>
                             </div>
                         )}
                       </div>

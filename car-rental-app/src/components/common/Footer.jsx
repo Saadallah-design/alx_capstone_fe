@@ -66,7 +66,7 @@ export default function Footer() {
         </div>
 
         <div className="border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
-           <p className="text-gray-400 text-sm font-medium">© 2024 Drive Phuket. All rights reserved.</p>
+           <p className="text-gray-400 text-sm font-medium">© 2026 Drive Phuket. All rights reserved.</p>
            <p className="text-gray-500 text-xs font-medium">Designed with <i className="fi fi-sr-heart text-red-500 mx-1"></i> in Cape Town</p>
         </div>
       </div>

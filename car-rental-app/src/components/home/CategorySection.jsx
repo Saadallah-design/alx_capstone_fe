@@ -26,7 +26,7 @@ const categories = [
   {
     id: 'BICYCLE',
     label: 'Bicycles',
-    icon: 'fi fi-rr-bicycle',
+    icon: 'fi fi-rr-bike',
     image: 'https://images.unsplash.com/photo-1541625602330-2277a4c46182?auto=format&fit=crop&q=80&w=800',
     count: '30+ Available'
   }
