@@ -58,6 +58,21 @@ export default function MyBookings() {
     });
   };
 
+  const handleCancelBooking = async (bookingId) => {
+    if (!window.confirm("Are you sure you want to cancel this booking?")) return;
+
+    try {
+      await apiClient.patch(`/api/bookings/${bookingId}/`, { booking_status: 'CANCELLED' });
+      // Update local state to reflect change
+      setBookings(prev => prev.map(b => 
+        b.id === bookingId ? { ...b, status: 'CANCELLED' } : b
+      ));
+    } catch (err) {
+      console.error("Cancellation failed:", err);
+      alert("Failed to cancel booking. Please try again.");
+    }
+  };
+
   if (!isAuthenticated) {
     return (
       <>
@@ -204,12 +219,20 @@ export default function MyBookings() {
                           {booking.status || 'Unknown'}
                         </span>
                         {booking.status === 'PENDING' && (
-                            <button
-                                onClick={() => navigate('/payment', { state: { booking } })}
-                                className="px-4 py-1.5 bg-gray-900 text-white rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-black transition-all shadow-md shadow-gray-200 ml-2"
-                            >
-                                Pay Now
-                            </button>
+                            <div className="flex gap-2 ml-2">
+                                <button
+                                    onClick={() => handleCancelBooking(booking.id)}
+                                    className="px-4 py-1.5 border border-red-200 text-red-500 rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-red-50 transition-all"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    onClick={() => navigate('/payment', { state: { booking } })}
+                                    className="px-4 py-1.5 bg-gray-900 text-white rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-black transition-all shadow-md shadow-gray-200"
+                                >
+                                    Pay Now
+                                </button>
+                            </div>
                         )}
                       </div>
 
