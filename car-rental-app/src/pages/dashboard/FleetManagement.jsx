@@ -122,8 +122,12 @@ export default function FleetManagement() {
         }
       });
       
-      selectedImages.forEach((image) => {
-        formDataToSend.append('images', image);
+      selectedImages.forEach((image, index) => {
+        formDataToSend.append(`images[${index}][image]`, image);
+        // Automatically make the first image the main one
+        if (index === 0) {
+          formDataToSend.append(`images[${index}][is_main]`, 'true');
+        }
       });
 
       let response;

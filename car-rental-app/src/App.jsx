@@ -20,6 +20,8 @@ import MyBookings from './pages/MyBookings'
 import ProfilePage from './pages/ProfilePage'
 import AboutPage from './pages/AboutPage'
 import HowItWorksPage from './pages/HowItWorksPage'
+import AgencyProfile from './pages/dashboard/AgencyProfile'
+import StaffManagement from './pages/dashboard/StaffManagement'
 import './App.css'
 
 
@@ -90,7 +92,7 @@ function App() {
 
         {/* Protected Agency Dashboard Routes */}
         <Route path="/dashboard" element={
-          <ProtectedRoute requiredRole="AGENCY_ADMIN">
+          <ProtectedRoute requiredRole="AGENCY_USER">
             <DashboardLayout />
           </ProtectedRoute>
         }>
@@ -98,8 +100,9 @@ function App() {
           <Route path="fleet" element={<FleetManagement />} />
           <Route path="bookings" element={<BookingManagement />} />
           <Route path="branches" element={<BranchManagement />} />
+          <Route path="staff" element={<StaffManagement />} />
           <Route path="analytics" element={<div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 italic text-gray-400">Analytics reports coming soon...</div>} />
-          <Route path="profile" element={<div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 italic text-gray-400">Agency profile settings coming soon...</div>} />
+          <Route path="profile" element={<AgencyProfile />} />
         </Route>
         
         {/* Fallback for other routes */}
@@ -113,7 +116,7 @@ function App() {
               <h2 className="text-3xl font-black text-gray-900 tracking-tighter mb-2">PAGE UNDER CONSTRUCTION</h2>
               <p className="text-gray-500 mb-8 max-w-sm">We're currently refining this experience. Stay tuned for updates.</p>
               <a href="/" className="px-8 py-3 bg-gray-900 text-white rounded-2xl font-bold hover:bg-black transition-all shadow-xl shadow-gray-200">
-                Return to Safety
+                Return to Home
               </a>
             </div>
           </>

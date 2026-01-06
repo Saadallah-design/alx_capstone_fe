@@ -13,13 +13,14 @@ const getMenuItems = (role) => {
   if (role === 'AGENCY_ADMIN') {
     items.push(
       { id: 'branches', label: 'Pickup Locations', icon: 'fi fi-rr-marker', path: '/dashboard/branches' },
+      { id: 'staff', label: 'Staff Management', icon: 'fi fi-rr-users', path: '/dashboard/staff' },
       { id: 'analytics', label: 'Analytics', icon: 'fi fi-rr-stats', path: '/dashboard/analytics' },
       { id: 'profile', label: 'Agency Profile', icon: 'fi fi-rr-building', path: '/dashboard/profile' }
     );
   } else if (role === 'AGENCY_STAFF') {
-    // Staff might have limited analytics or profile access if needed
+    // Staff see their personal profile
     items.push(
-      { id: 'profile', label: 'My Profile', icon: 'fi fi-rr-user', path: '/dashboard/profile' }
+      { id: 'profile', label: 'My Personal Profile', icon: 'fi fi-rr-user', path: '/profile' }
     );
   }
 

@@ -18,7 +18,13 @@ export default function ProtectedRoute({ children, requiredRole }) {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-  if (requiredRole && user?.role !== requiredRole && !(requiredRole === 'AGENCY_ADMIN' && user?.role === 'AGENCY_STAFF')) {
+  const isAgencyUser = user?.role === 'AGENCY_ADMIN' || user?.role === 'AGENCY_STAFF';
+
+  if (requiredRole === 'AGENCY_USER') {
+    if (!isAgencyUser) {
+        return <Navigate to="/" replace />;
+    }
+  } else if (requiredRole && user?.role !== requiredRole) {
     // Check if they are actually an agency applicant who is just not yet approved
     // (Assuming the backend might return role='CUSTOMER' but is_approved=false for applicants)
     if (requiredRole === 'AGENCY_ADMIN' && user?.is_pending_agency) {

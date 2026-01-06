@@ -22,11 +22,15 @@ export default function BranchManagement() {
     is_active: true,
   });
 
+  const [editingBranch, setEditingBranch] = useState(null);
+
   useEffect(() => {
     const fetchBranches = async () => {
       try {
         setLoading(true);
         const response = await apiClient.get('/api/branches/');
+        // Filter to show only branches belonging to the current agency if needed, 
+        // though the backend should handle this via get_queryset.
         setBranches(response.data);
       } catch (err) {
         console.error("Error fetching branches:", err);
@@ -47,15 +51,53 @@ export default function BranchManagement() {
     }));
   };
 
+  const handleEdit = (branch) => {
+    setEditingBranch(branch);
+    setFormData({
+      name: branch.name,
+      city: branch.city,
+      address: branch.address,
+      country: branch.country || 'Thailand',
+      phone_number: branch.phone_number,
+      email: branch.email,
+      opening_time: branch.opening_time,
+      closing_time: branch.closing_time,
+      is_pickup_point: branch.is_pickup_point,
+      is_dropoff_point: branch.is_dropoff_point,
+      is_active: branch.is_active,
+    });
+    setIsModalOpen(true);
+  };
+
+  const handleDelete = async (slug) => {
+    if (!window.confirm("Are you sure you want to delete this branch? This action cannot be undone.")) return;
+    
+    try {
+      await apiClient.delete(`/api/branches/${slug}/`);
+      setBranches(prev => prev.filter(b => b.slug !== slug));
+    } catch (err) {
+      console.error("Error deleting branch:", err);
+      setError("Failed to delete branch. It might be linked to existing rentals.");
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmitting(true);
     setError(null);
 
     try {
-      const response = await apiClient.post('/api/branches/', formData);
-      setBranches(prev => [...prev, response.data]);
+      let response;
+      if (editingBranch) {
+        response = await apiClient.patch(`/api/branches/${editingBranch.slug}/`, formData);
+        setBranches(prev => prev.map(b => b.id === editingBranch.id ? response.data : b));
+      } else {
+        response = await apiClient.post('/api/branches/', formData);
+        setBranches(prev => [...prev, response.data]);
+      }
+      
       setIsModalOpen(false);
+      setEditingBranch(null);
       setFormData({ 
         name: '', city: '', address: '', country: 'Thailand',
         phone_number: '', email: '', opening_time: '08:00:00', 
@@ -63,14 +105,25 @@ export default function BranchManagement() {
         is_dropoff_point: true, is_active: true 
       });
     } catch (err) {
-      console.error("Error adding branch:", err);
+      console.error("Error saving branch:", err);
       const errorMessage = err.response?.data ? 
         Object.entries(err.response.data).map(([key, value]) => `${key}: ${value}`).join(', ') : 
-        "Failed to add branch. Please check the fields.";
+        "Failed to save branch. Please check the fields.";
       setError(errorMessage);
     } finally {
       setSubmitting(false);
     }
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setEditingBranch(null);
+    setFormData({ 
+      name: '', city: '', address: '', country: 'Thailand',
+      phone_number: '', email: '', opening_time: '08:00:00', 
+      closing_time: '20:00:00', is_pickup_point: true, 
+      is_dropoff_point: true, is_active: true 
+    });
   };
 
   if (loading) {
@@ -101,9 +154,9 @@ export default function BranchManagement() {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden animate-in fade-in zoom-in duration-200 flex flex-col max-h-[90vh]">
             <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
-              <h3 className="text-xl font-bold text-gray-900">New Branch</h3>
+              <h3 className="text-xl font-bold text-gray-900">{editingBranch ? 'Edit Branch' : 'New Branch'}</h3>
               <button 
-                onClick={() => setIsModalOpen(false)}
+                onClick={closeModal}
                 className="text-gray-400 hover:text-gray-900 transition-colors p-2 rounded-full hover:bg-gray-100 flex items-center justify-center"
               >
                 <i className="fi fi-rr-cross-small text-xl"></i>
@@ -193,11 +246,19 @@ export default function BranchManagement() {
                     />
                     <span className="text-sm font-medium text-gray-700 group-hover:text-gray-900">Dropoff Point</span>
                 </label>
+                <label className="flex items-center gap-2 cursor-pointer group">
+                    <input 
+                        type="checkbox" name="is_active" 
+                        checked={formData.is_active} onChange={handleChange}
+                        className="w-5 h-5 rounded border-gray-300 text-gray-900 focus:ring-gray-900"
+                    />
+                    <span className="text-sm font-medium text-gray-700 group-hover:text-gray-900">Active</span>
+                </label>
               </div>
 
               <div className="pt-4 flex justify-end space-x-3 mt-auto">
                 <button 
-                  type="button" onClick={() => setIsModalOpen(false)}
+                  type="button" onClick={closeModal}
                   className="px-6 py-2.5 text-sm font-bold text-gray-600 hover:bg-gray-100 rounded-xl transition-colors"
                 >
                   Cancel
@@ -206,7 +267,7 @@ export default function BranchManagement() {
                   type="submit" disabled={submitting}
                   className={`px-8 py-2.5 text-sm font-bold text-white bg-gray-900 rounded-xl shadow-lg shadow-gray-200 hover:bg-black transition-all ${submitting ? 'opacity-50 cursor-not-allowed' : ''}`}
                 >
-                  {submitting ? 'Creating...' : 'Create Branch'}
+                  {submitting ? (editingBranch ? 'Updating...' : 'Creating...') : (editingBranch ? 'Update Branch' : 'Create Branch')}
                 </button>
               </div>
             </form>
@@ -236,18 +297,29 @@ export default function BranchManagement() {
                   <div className="h-12 w-12 bg-gray-50 rounded-xl flex items-center justify-center">
                     <i className="fi fi-rr-marker text-xl text-gray-900"></i>
                   </div>
-                  <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest border border-gray-100 px-2 py-1 rounded-md">
-                    Active
-                  </span>
+                  <div className="flex gap-2">
+                    <span className={`text-[10px] font-bold uppercase tracking-widest border px-2 py-1 rounded-md ${branch.is_active ? 'text-emerald-600 border-emerald-100 bg-emerald-50' : 'text-gray-400 border-gray-100'}`}>
+                      {branch.is_active ? 'Active' : 'Inactive'}
+                    </span>
+                  </div>
                </div>
                <h3 className="text-lg font-bold text-gray-900 truncate">{branch.name}</h3>
                <p className="text-gray-500 text-sm mt-1 flex items-center">
                  <i className="fi fi-rr-map-marker mr-2 text-[10px]"></i>
                  {branch.city}
                </p>
-               <div className="mt-6 pt-4 border-t border-gray-50 flex justify-end">
-                  <button className="text-xs font-bold text-gray-400 hover:text-gray-900 transition-colors uppercase tracking-widest">
-                    Settings
+               <div className="mt-6 pt-4 border-t border-gray-50 flex justify-between items-center">
+                  <button 
+                    onClick={() => handleDelete(branch.slug)}
+                    className="text-xs font-bold text-red-400 hover:text-red-600 transition-colors uppercase tracking-widest"
+                  >
+                    Delete
+                  </button>
+                  <button 
+                    onClick={() => handleEdit(branch)}
+                    className="text-xs font-bold text-gray-400 hover:text-gray-900 transition-colors uppercase tracking-widest"
+                  >
+                    Edit Settings
                   </button>
                </div>
             </div>
