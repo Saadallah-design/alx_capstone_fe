@@ -36,6 +36,7 @@ A premium, localized marketplace for renting cars, scooters, and more in Phuket.
 - **Secure Payments:** Full Stripe integration for security deposits and rental payments.
 - **User Profiles:** Personalized settings for customers and agency owners.
 - **Mobile Responsive:** Optimized for both tourists on-the-go and agency staff.
+- **Detailed Role Guide:** See 🎭 **[Platform Roles & Actions](docs/ROLES.md)** for a full breakdown of permissions.
 
 ---
 

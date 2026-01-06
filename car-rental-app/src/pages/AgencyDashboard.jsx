@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import apiClient from '../api/apiClient';
+import { useAuth } from '../context/AuthContext';
 
 const StatCard = ({ title, value, icon, color }) => (
   <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 flex items-center justify-between group hover:shadow-lg hover:border-gray-200 transition-all duration-300">
@@ -14,6 +15,7 @@ const StatCard = ({ title, value, icon, color }) => (
 );
 
 export default function AgencyDashboard() {
+  const { user } = useAuth();
   const [stats, setStats] = useState({
     totalCars: 0,
     activeBookings: 0,
@@ -79,7 +81,12 @@ export default function AgencyDashboard() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatCard title="Total Fleet" value={stats.totalCars} icon="fi fi-rr-car" />
         <StatCard title="Confirmed" value={stats.activeBookings} icon="fi fi-rr-calendar-check" />
-        <StatCard title="Total Revenue" value={`${stats.monthlyEarnings.toLocaleString()} ฿`} icon="fi fi-rr-money-bill-wave" />
+        {/* Only show revenue to Admins */}
+        {user?.role === 'AGENCY_ADMIN' ? (
+           <StatCard title="Total Revenue" value={`${stats.monthlyEarnings.toLocaleString()} ฿`} icon="fi fi-rr-money-bill-wave" />
+        ) : (
+           <StatCard title="My Tasks" value="View" icon="fi fi-rr-list-check" />
+        )}
         <StatCard title="Pending Requests" value={stats.pendingApprovals} icon="fi fi-rr-clock" />
       </div>
 

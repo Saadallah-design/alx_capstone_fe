@@ -1,7 +1,10 @@
 import { useState, useEffect } from 'react';
 import apiClient from '../../api/apiClient';
+import { useAuth } from '../../context/AuthContext';
 
 export default function BranchManagement() {
+  const { user } = useAuth();
+  const isAdmin = user?.role === 'AGENCY_ADMIN';
   const [branches, setBranches] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -141,13 +144,24 @@ export default function BranchManagement() {
           <h2 className="text-2xl font-bold text-gray-900">Pickup Locations</h2>
           <p className="text-gray-500 text-sm">Manage the branches where customers can pick up vehicles.</p>
         </div>
-        <button 
-          onClick={() => setIsModalOpen(true)}
-          className="px-6 py-3 bg-gray-900 text-white rounded-2xl font-bold shadow-lg shadow-gray-200 hover:bg-black hover:scale-[1.02] transition-all flex items-center text-sm"
-        >
-          <i className="fi fi-rr-plus mr-2 flex items-center"></i>
-          Add New Branch
-        </button>
+        {isAdmin && (
+          <button 
+            onClick={() => {
+              setEditingBranch(null);
+              setFormData({
+                name: '', city: '', address: '', country: 'Thailand',
+                phone_number: '', email: '', opening_time: '08:00:00',
+                closing_time: '20:00:00', is_pickup_point: true,
+                is_dropoff_point: true, is_active: true
+              });
+              setIsModalOpen(true);
+            }}
+            className="flex items-center bg-gray-900 text-white px-6 py-3 rounded-2xl font-bold shadow-lg shadow-gray-200 hover:bg-black hover:scale-105 transition-all text-sm"
+          >
+            <i className="fi fi-rr-plus mr-2 flex items-center"></i>
+            Add New Branch
+          </button>
+        )}
       </div>
 
       {isModalOpen && (
@@ -309,18 +323,26 @@ export default function BranchManagement() {
                  {branch.city}
                </p>
                <div className="mt-6 pt-4 border-t border-gray-50 flex justify-between items-center">
-                  <button 
-                    onClick={() => handleDelete(branch.slug)}
-                    className="text-xs font-bold text-red-400 hover:text-red-600 transition-colors uppercase tracking-widest"
-                  >
-                    Delete
-                  </button>
-                  <button 
-                    onClick={() => handleEdit(branch)}
-                    className="text-xs font-bold text-gray-400 hover:text-gray-900 transition-colors uppercase tracking-widest"
-                  >
-                    Edit Settings
-                  </button>
+                  {isAdmin ? (
+                    <>
+                      <button 
+                        onClick={() => handleDelete(branch.slug)}
+                        className="text-xs font-bold text-red-400 hover:text-red-600 transition-colors uppercase tracking-widest"
+                      >
+                        Delete
+                      </button>
+                      <button 
+                        onClick={() => handleEdit(branch)}
+                        className="text-xs font-bold text-gray-400 hover:text-gray-900 transition-colors uppercase tracking-widest"
+                      >
+                        Edit Settings
+                      </button>
+                    </>
+                  ) : (
+                    <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest w-full text-center">
+                      View Only
+                    </span>
+                  )}
                </div>
             </div>
           ))

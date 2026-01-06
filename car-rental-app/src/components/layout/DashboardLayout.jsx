@@ -18,9 +18,11 @@ const getMenuItems = (role) => {
       { id: 'profile', label: 'Agency Profile', icon: 'fi fi-rr-building', path: '/dashboard/profile' }
     );
   } else if (role === 'AGENCY_STAFF') {
-    // Staff see their personal profile
+    // Staff see agency details (read-only handled in components) plus their personal profile
     items.push(
-      { id: 'profile', label: 'My Personal Profile', icon: 'fi fi-rr-user', path: '/profile' }
+      { id: 'branches', label: 'Pickup Locations', icon: 'fi fi-rr-marker', path: '/dashboard/branches' },
+      { id: 'profile', label: 'Agency Profile', icon: 'fi fi-rr-building', path: '/dashboard/profile' },
+      { id: 'personal', label: 'My Personal Profile', icon: 'fi fi-rr-user', path: '/profile' }
     );
   }
 

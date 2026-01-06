@@ -6,7 +6,7 @@ export default function Navbar({
   currentPage = "home"
 }) {
   const { user, logout, isAuthenticated } = useAuth();
-  const isAgency = user?.role === 'AGENCY_ADMIN';
+  const isAgency = user?.role === 'AGENCY_ADMIN' || user?.role === 'AGENCY_STAFF';
   
   const [menuOpen, setMenuOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
